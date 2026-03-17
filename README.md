@@ -1,0 +1,2 @@
+# lpdoc
+LightPainter Documentation Page
