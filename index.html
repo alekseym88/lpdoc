@@ -808,11 +808,6 @@ code {
   font-style: italic;
 }
 
-@media (max-width: 960px) {
-  .side-nav { display: none; }
-  .main { margin-left: 0; padding: 32px 20px 80px; }
-  .hero h1 { font-size: 36px; }
-}
 </style>
 </head>
 <body>
@@ -2072,37 +2067,56 @@ code {
 
   // ═══════════ Image Comparison Slider ═══════════
 
+  var dragState = null; // { body: element } or null
+
+  function activeSlide(body) {
+    return body.querySelector('.compare-slide[data-active="true"]');
+  }
+
+  function setSliderPosition(body, pctRaw) {
+    var pct = Math.max(2, Math.min(98, pctRaw));
+    var slide = activeSlide(body);
+    if (!slide) return;
+    slide.querySelector('.compare-layer--b').style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+    slide.querySelector('.compare-divider').style.left = pct + '%';
+    slide.querySelector('.compare-handle').style.left  = pct + '%';
+  }
+
+  function pctFromPointer(body, clientX) {
+    var rect = body.getBoundingClientRect();
+    return ((clientX - rect.left) / rect.width) * 100;
+  }
+
+  // Attach mousedown/touchstart per slider
   document.querySelectorAll('.compare-body').forEach(function(body) {
-    var dragging = false;
-
-    function activeSlide() {
-      return body.querySelector('.compare-slide[data-active="true"]');
-    }
-
-    function setPosition(pctRaw) {
-      var pct = Math.max(2, Math.min(98, pctRaw));
-      var slide = activeSlide();
-      if (!slide) return;
-      slide.querySelector('.compare-layer--b').style.clipPath = 'inset(0 0 0 ' + pct + '%)';
-      slide.querySelector('.compare-divider').style.left = pct + '%';
-      slide.querySelector('.compare-handle').style.left  = pct + '%';
-    }
-
-    function pctFromEvent(e) {
-      var x = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-      var rect = body.getBoundingClientRect();
-      return ((x - rect.left) / rect.width) * 100;
-    }
-
-    body.addEventListener('mousedown',  function(e) { dragging = true; setPosition(pctFromEvent(e)); });
-    body.addEventListener('touchstart', function(e) { dragging = true; setPosition(pctFromEvent(e)); }, { passive: true });
-
-    document.addEventListener('mousemove', function(e) { if (dragging) { e.preventDefault(); setPosition(pctFromEvent(e)); }});
-    document.addEventListener('touchmove', function(e) { if (dragging) setPosition(pctFromEvent(e)); }, { passive: true });
-
-    document.addEventListener('mouseup',  function() { dragging = false; });
-    document.addEventListener('touchend', function() { dragging = false; });
+    body.addEventListener('mousedown', function(e) {
+      e.preventDefault(); // prevent native drag/text selection
+      dragState = { body: body };
+      setSliderPosition(body, pctFromPointer(body, e.clientX));
+    });
+    body.addEventListener('touchstart', function(e) {
+      dragState = { body: body };
+      setSliderPosition(body, pctFromPointer(body, e.touches[0].clientX));
+    }, { passive: true });
   });
+
+  // Single global move handler
+  document.addEventListener('mousemove', function(e) {
+    if (!dragState) return;
+    e.preventDefault();
+    setSliderPosition(dragState.body, pctFromPointer(dragState.body, e.clientX));
+  });
+  document.addEventListener('touchmove', function(e) {
+    if (!dragState) return;
+    setSliderPosition(dragState.body, pctFromPointer(dragState.body, e.touches[0].clientX));
+  }, { passive: true });
+
+  // Single global release handler
+  document.addEventListener('mouseup', function() { dragState = null; });
+  document.addEventListener('touchend', function() { dragState = null; });
+  document.addEventListener('touchcancel', function() { dragState = null; });
+  // Also cancel if mouse leaves the window entirely
+  document.addEventListener('mouseleave', function() { dragState = null; });
 
   // ═══════════ Tab Switching ═══════════
 
