@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Light Painter — Blender Add-on Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0f;
+  --bg-card: #141418;
+  --bg-card-alt: #1a1a20;
+  --bg-code: #1e1e26;
+  --border: #2a2a35;
+  --border-accent: #3a3a4a;
+  --text: #d8d8e0;
+  --text-muted: #8888a0;
+  --text-dim: #5c5c72;
+  --accent: #f0a030;
+  --accent-glow: #f0a03040;
+  --accent2: #60a8ff;
+  --accent3: #a070f0;
+  --accent4: #50d8a0;
+  --red: #e85050;
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+.side-nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  padding: 28px 0;
+  overflow-y: auto;
+  z-index: 100;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.side-nav::-webkit-scrollbar { width: 4px; }
+.side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.nav-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.nav-logo h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.nav-logo span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+}
+
+.nav-group { margin-bottom: 6px; }
+.nav-group-title {
+  display: block;
+  padding: 8px 24px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+}
+.nav-link {
+  display: block;
+  padding: 5px 24px 5px 32px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color .15s, background .15s;
+  border-left: 2px solid transparent;
+}
+.nav-link:hover {
+  color: var(--text);
+  background: #ffffff06;
+  border-left-color: var(--accent);
+}
+
+/* ── MAIN ── */
+.main {
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 56px 56px 120px;
+}
+
+/* ── HERO ── */
+.hero {
+  margin-bottom: 64px;
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -40px; left: -60px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+  pointer-events: none;
+  opacity: .4;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #fff;
+  position: relative;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent), #ff8020);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 17px;
+  color: var(--text-muted);
+  margin-top: 16px;
+  max-width: 560px;
+  position: relative;
+}
+.badge-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  position: relative;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.badge--blender { background: #ea7600; color: #000; }
+.badge--license { background: var(--bg-card-alt); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* ── SECTIONS ── */
+.section {
+  margin-bottom: 56px;
+  scroll-margin-top: 32px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-title .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.icon--amber  { background: #f0a03018; color: var(--accent); }
+.icon--blue   { background: #60a8ff18; color: var(--accent2); }
+.icon--purple { background: #a070f018; color: var(--accent3); }
+.icon--green  { background: #50d8a018; color: var(--accent4); }
+.icon--red    { background: #e8505018; color: var(--red); }
+
+.section-desc {
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  max-width: 640px;
+  line-height: 1.5;
+}
+
+/* ── FIELD CARDS ── */
+.field-grid { display: flex; flex-direction: column; gap: 12px; }
+.field {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  transition: border-color .2s;
+}
+.field:hover { border-color: var(--border-accent); }
+
+.field-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.field-name {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+.field-type {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.type-enum    { background: #60a8ff18; color: var(--accent2); }
+.type-bool    { background: #50d8a018; color: var(--accent4); }
+.type-float   { background: #a070f018; color: var(--accent3); }
+.type-int     { background: #f0a03018; color: var(--accent); }
+.type-color   { background: #e8505018; color: var(--red); }
+.type-ptr     { background: #ffffff10; color: var(--text-muted); }
+.type-action  { background: #f0a03025; color: var(--accent); border: 1px solid var(--accent); }
+
+.field-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.35;
+}
+.field-meta {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+.field-meta span { white-space: nowrap; }
+.field-meta strong { color: var(--text-muted); font-weight: 500; }
+
+.enum-opts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.enum-opt {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+.enum-opt.is-default { border-color: var(--accent); color: var(--accent); }
+
+.hotkey {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--bg-code);
+  border: 1px solid var(--border-accent);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text);
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.callout {
+  background: var(--bg-card-alt);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+.callout strong { color: var(--accent); font-weight: 600; }
+.callout.callout--blue { border-left-color: var(--accent2); }
+.callout.callout--blue strong { color: var(--accent2); }
+
+.subsection { margin-top: 32px; margin-bottom: 20px; }
+.subsection-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.subsection-title::before {
+  content: '';
+  width: 3px; height: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.subsection-desc {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.sep { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+/* Setup steps */
+.setup-steps { display: flex; flex-direction: column; gap: 16px; counter-reset: step; }
+.step {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px 22px 72px;
+  position: relative;
+  transition: border-color .2s;
+}
+.step:hover { border-color: var(--border-accent); }
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 22px; top: 20px;
+  width: 34px; height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+.step-title { font-weight: 700; color: #fff; font-size: 15px; margin-bottom: 4px; }
+.step-body { color: var(--text-muted); font-size: 14px; line-height: 1.65; }
+code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--bg-code);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* Image placeholder blocks */
+.img-block {
+  background: var(--bg-card);
+  border: 1px dashed var(--border-accent);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 20px 0;
+}
+.img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background:
+    repeating-linear-gradient(45deg, transparent, transparent 12px, #1a1a2208 12px, #1a1a2208 24px),
+    var(--bg-card);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  text-align: center;
+  padding: 24px;
+  line-height: 1.7;
+}
+.img-caption {
+  padding: 12px 18px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+/* External link */
+.ext-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent2);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color .2s, color .2s;
+  margin-top: 8px;
+}
+.ext-link:hover { border-color: var(--accent2); color: #fff; }
+.ext-link svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ── Brush param rows ── */
+.param-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.param-group:hover { border-color: var(--border-accent); }
+.param-group-title {
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  background: var(--bg-card-alt);
+  border-bottom: 1px solid var(--border);
+}
+
+.param-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  align-items: baseline;
+}
+.param-row:last-child { border-bottom: none; }
+
+.param-label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.param-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.3;
+}
+.param-default {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.param-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.param-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.param-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Conditional sub-param (indented child) */
+.param-row.param-sub {
+  padding-left: 36px;
+  background: #ffffff02;
+}
+.param-row.param-sub .param-name { color: var(--text-muted); }
+
+/* Condition badge */
+.param-cond {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #ffffff08;
+  border: 1px solid var(--border);
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+/* Inline image strip inside param-groups */
+.param-img-strip {
+  padding: 0 20px 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.param-img-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.param-img-thumb {
+  width: 120px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.3;
+}
+.param-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.param-img-thumb canvas { display: block; width: 100%; height: 100%; }
+.param-img-caption {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* Single image placeholder (for blur etc) */
+.param-img-single {
+  margin: 0 20px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-accent);
+  overflow: hidden;
+  aspect-ratio: 3/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  text-align: center;
+  background:
+    repeating-linear-gradient(45deg, transparent, transparent 10px, #1a1a2208 10px, #1a1a2208 20px),
+    var(--bg-card);
+}
+.param-img-single img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Compact compare (no tabs, inside param-group) */
+.compare-widget--compact {
+  margin: 0 0 0;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.compare-widget--compact .compare-tabs {
+  border-bottom: 1px solid var(--border);
+}
+.compare-widget--compact .compare-body {
+  aspect-ratio: 16/9;
+}
+.compare-widget--compact .compare-caption {
+  font-size: 11.5px;
+  padding: 10px 14px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .param-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ── Paint Space Mode Cards ── */
+.mode-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.mode-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  transition: border-color .2s;
+}
+.mode-card:hover { border-color: var(--border-accent); }
+.mode-card--camera { border-top: 2px solid var(--accent); }
+.mode-card--light  { border-top: 2px solid var(--accent2); }
+
+.mode-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 10px;
+}
+.mode-card--camera .mode-card-badge { background: var(--accent); color: #000; }
+.mode-card--light  .mode-card-badge { background: var(--accent2); color: #000; }
+
+.mode-card-title {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.mode-card-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.mode-card-detail {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.55;
+  
+}
+.mode-card-detail strong {font-family: var(--font-mono); color: var(--text-muted); }
+
+@media (max-width: 700px) {
+  .mode-cards { grid-template-columns: 1fr; }
+}
+
+/* ── Image Comparison Slider ── */
+.compare-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 20px 0;
+}
+.compare-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.compare-tab {
+  flex: 1;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  transition: color .15s, background .15s;
+  position: relative;
+}
+.compare-tab:hover { color: var(--text-muted); background: #ffffff04; }
+.compare-tab.is-active {
+  color: var(--accent);
+  background: #ffffff06;
+}
+.compare-tab.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+.compare-body {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.compare-slide {
+  position: absolute;
+  inset: 0;
+}
+.compare-slide[data-active="false"] { display: none; }
+.compare-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.compare-layer--a { z-index: 1; }
+.compare-layer--b {
+  z-index: 2;
+  clip-path: inset(0 0 0 50%);
+}
+.compare-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Placeholder gradient fills when no real images yet */
+.compare-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #fff8;
+  text-align: center;
+  line-height: 1.5;
+  padding: 20px;
+  gap: 6px;
+}
+.compare-placeholder .ph-icon { font-size: 28px; opacity: 0.5; }
+.compare-placeholder .ph-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fffa;
+}
+
+.compare-divider {
+  position: absolute;
+  z-index: 10;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: #fff;
+  transform: translateX(-50%);
+  pointer-events: none;
+  box-shadow: 0 0 8px #0008;
+}
+.compare-handle {
+  position: absolute;
+  z-index: 11;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #0003;
+  box-shadow: 0 2px 10px #0005;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.compare-handle svg { width: 18px; height: 18px; fill: #333; }
+
+.compare-label {
+  position: absolute;
+  bottom: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #000a;
+  backdrop-filter: blur(6px);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: #fffc;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  z-index: 1;
+}
+.compare-label--left  { left: 12px; }
+.compare-label--right { right: 12px; }
+
+.compare-caption {
+  padding: 12px 18px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+@media (max-width: 960px) {
+  .side-nav { display: none; }
+  .main { margin-left: 0; padding: 32px 20px 80px; }
+  .hero h1 { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+
+
+
+<main class="main">
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <h1>Documentation</h1>
+  <div class="badge-row">
+    <span class="badge badge--blender">Blender 3.6.x</span>
+    <span class="badge badge--blender">Cycles</span>
+  </div>
+</section>
+
+<!-- ═══════════ BEFORE YOU START ═══════════ -->
+<section class="section" id="before-you-start">
+  <h2 class="section-title"> Before You Start</h2>
+  <p class="section-desc">Follow these steps to set up your scene correctly before using Light Painter. Skipping these will result in the add-on not working or the paint not being visible in your renders.</p>
+
+  <div class="setup-steps">
+    <div class="step">
+      <div class="step-title">Switch to Cycles Render Engine</div>
+      <div class="step-body">Light Painter relies on Cycles' node-based light textures (gobos). Go to <code>Render Properties</code> → <code>Render Engine</code> and set it to <strong>Cycles</strong>. EEVEE does not support the light texture nodes that this add-on creates.</div>
+    </div>
+    <div class="step">
+      <div class="step-title">Add a Spot Light or Area Light</div>
+      <div class="step-body">Light Painter works exclusively with <strong>Spot</strong> and <strong>Area</strong> lights. Point lights and Sun lights are not supported because they don't have a directional texture projection. Add one via <code>Add</code> → <code>Light</code> → <code>Spot</code> or <code>Area</code>, and point it at your scene.</div>
+    </div>
+    <div class="step">
+      <div class="step-title">Set a Small Spread / Radius Value</div>
+      <div class="step-body">
+        For sharp and precise painting results, keep the light’s physical size small. In <code>Light Properties</code>:
+        <br>• <strong>Spot Light</strong> — use a small <code>Radius</code> (e.g. <strong>0.0 – 0.1 m</strong>). Keep <code>Spot Size</code> below <strong>160°</strong> to reduce distortion and maintain a cleaner projection.
+        <br>• <strong>Area Light</strong> — set <code>Size</code> according to your scene scale (e.g. <strong>5 – 30 m</strong>), and keep <code>Spread</code> fairly low (e.g. <strong>0.01 – 0.5</strong>).
+        <br><br>You can change <strong>Radius</strong> or <strong>Spread</strong> later for softer lighting, but while painting, smaller values help you see details clearly.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-title">Select the Light in the Panel &amp; Start Painting</div>
+      <div class="step-body">Open the <strong>Light Painter</strong> panel in the 3D Viewport sidebar (<code>N</code> key → <strong>Lighting</strong> tab). Pick your light in the <strong>Light</strong> dropdown, choose a texture resolution, and click <strong>Reset Light</strong> to initialize the node setup. Then select the <strong>Brush</strong> or <strong>Gradient</strong> tool from the toolbar and start painting!</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:20px">
+    <strong>Quick checklist:</strong> Cycles enabled → Spot or Area light → Correct Radius / Spread / Size → Pick Light in panel → Reset Light → Paint.
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ LIGHT SOURCE ═══════════ -->
+<section class="section" id="light-source">
+  <h2 class="section-title">Light Source</h2>
+  <p class="section-desc">Choose which light to paint on and set the base texture resolution.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Light</span>
+        <span class="field-type type-ptr">Object Pointer</span>
+      </div>
+      <p class="field-desc">The Spot or Area light whose texture you want to paint on. Use the eyedropper or dropdown to pick a light from your scene.</p>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Light Texture Resolution</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">Resolution of the light texture (gobo) image that stores your paint. Higher = finer detail, more memory, slower.</p>
+      <div class="enum-opts">
+        <span class="enum-opt">512px</span>
+        <span class="enum-opt is-default">1024px</span>
+        <span class="enum-opt">2048px</span>
+        <span class="enum-opt">4096px</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Reset Light</span>
+        <span class="field-type type-action">Operator</span>
+      </div>
+      <p class="field-desc">Reinitializes the light texture, resets all layers back to a single default one. Use this after changing resolution or if the shader nodes appear broken.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:20px">
+    <strong>Note:</strong> The light texture proportion is tied to the light size. When the size changes, all layers are automatically reset to blank with the updated proportions. If the size was changed accidentally, you can undo it using the standard shortcut (<strong>Cmd + Z</strong>)
+  </div>
+
+  <div class="callout" style="margin-top:16px;border-color: red;">
+    <span><strong style="color: red;">Important:</strong> Light Painter uses viewport projection to paint onto the light texture. When a light source has a physical size, light can bleed beyond the painted region — even into shadowed areas and outside the light texture boundary. This is caused by Blender's internal algorithm for how light spreads. The current version of the add-on does not account for this effect when painting, though a future update may introduce edge protection based on light size and distance to compensate for it.</span>
+  </div>
+
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ LAYERS ═══════════ -->
+<section class="section" id="layers">
+  <h2 class="section-title">Layers System</h2>
+  <p class="section-desc">A Photoshop-style layer stack for each light. New layers are added at the top. Each layer has its own image, blend mode, opacity, visibility toggle, and transform. Layers are composited from bottom to top.</p>
+
+  <div class="callout" style="margin-bottom:20px">
+    <strong>How layers are stored:</strong> Each layer creates a Blender Image datablock that holds its pixel data. The add-on also writes temporary <code>.exr</code> files to a temp folder on disk — these are required for the layer system to function correctly (undo, persistence, layer compositing). The temp files are cleaned up automatically when the add-on is disabled or Blender is closed. Layer metadata (names, blend modes, order, transforms) is saved inside the <code>.blend</code> file itself.
+  </div>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Layer Controls</span>
+      </div>
+      <p class="field-desc" style="margin-bottom: 10px;"><code>+</code> <code>−</code> — adds a new empty layer above the active layer / deletes the active layer.</p>
+      <p class="field-desc" style="margin-bottom: 10px;"><code>▲</code> <code>▼</code> — reorder the active layer up (composites later, on top) or down (composites earlier, below).</p>
+      <p class="field-desc" style="margin-bottom: 10px;"><code>Duplicate</code> — creates an exact copy of the active layer including image data and all settings.</p>
+      <p class="field-desc" style="margin-bottom: 10px;"><code>Merge Visible</code> — flattens all visible layers into one; hidden layers are preserved.</p>
+    </div>
+  </div>
+
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ LAYER BLEND & IMPORT ═══════════ -->
+<section class="section" id="layer-blend">
+  <h2 class="section-title">Active Layer</h2>
+  <p class="section-desc">Controls for the selected (active) layer.</p>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Blend</h3>
+  </div>
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Opacity</span>
+        <span class="field-type type-float">Float</span>
+      </div>
+      <p class="field-desc">Master opacity of the layer. At 0 the layer is fully transparent; at 1 it contributes at full strength.</p>
+      <div class="field-meta"><span><strong>Default:</strong> 1.0</span></div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Blend Mode</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">How this layer's pixels combine with the layers below. Standard compositing modes — <strong>Mix</strong> (alpha-over), <strong>Multiply</strong> (darken), <strong>Screen</strong> (lighten), <strong>Add</strong> (additive light), <strong>Subtract</strong> (remove light), <strong>Overlay</strong> (contrast boost), <strong>Soft Light</strong> (gentle tinting).</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">Mix</span>
+        <span class="enum-opt">Multiply</span>
+        <span class="enum-opt">Screen</span>
+        <span class="enum-opt">Add</span>
+        <span class="enum-opt">Subtract</span>
+        <span class="enum-opt">Overlay</span>
+        <span class="enum-opt">Soft Light</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Image Tex → Active Layer</h3>
+  </div>
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Source Image</span>
+        <span class="field-type type-ptr">Image</span>
+      </div>
+      <p class="field-desc">Pick any image already loaded in Blender. The image will be resized to match the light texture resolution and written into the active layer, replacing its contents.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Fill Color → Active Layer</h3>
+  </div>
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Fill Color</span>
+        <span class="field-type type-color">RGBA</span>
+      </div>
+      <p class="field-desc">Fill the active layer with a solid color. Useful for resetting the layer color or adding an initial tint. White = full light, black = no light. Alpha 0 clears the layer entirely. Click <strong>Apply</strong> to fill.</p>
+      <div class="field-meta"><span><strong>Default:</strong> (0, 0, 0, 1) — black, opaque</span></div>
+    </div>
+  </div>
+
+  <div class="subsection" style="margin-bottom: 0;">
+    <h3 class="subsection-title">Layer Transform</h3>
+  </div>
+
+  <p class="section-desc">Non-destructive transforms on the active layer's image within light UV space.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Offset / Rotation / Scale / Pivot</span>
+        <span class="field-type type-float">Transforms</span>
+      </div>
+      <p class="field-desc"><strong>Offset</strong> — translates the layer in UV space (1.0 = full texture width/height).</p>
+      <p class="field-desc"><strong>Rotation</strong> — rotates around the pivot point.</p>
+      <p class="field-desc"><strong>Scale</strong> — resizes from the pivot (below 1 = enlarge, above 1 = shrink, non-uniform supported).</p>
+      <p class="field-desc"><strong>Pivot</strong> — center for rotation/scale in UV space; (0.5, 0.5) = texture center, (0, 0) = bottom-left, range 0–1.</p>
+      <div class="field-meta">
+        <span><strong>Offset:</strong> (0, 0)</span>
+        <span><strong>Rotation:</strong> 0°</span>
+        <span><strong>Scale:</strong> (1, 1)</span>
+        <span><strong>Pivot:</strong> (0.5, 0.5)</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Reset Transform</span>
+        <span class="field-type type-action">Operator</span>
+      </div>
+      <p class="field-desc">Resets all transform values to defaults.</p>
+    </div>
+  </div>
+
+  <div class="callout callout--blue" style="margin-top:16px">
+    <strong>Active Layer Shortcuts</strong> (available when Brush or Gradient tool is selected):<br>
+    <span class="hotkey">Hold D</span> + click &amp; drag mouse to move layer &nbsp;
+    <span class="hotkey">Hold F</span> + click &amp; drag mouse to rotate layer &nbsp;
+    <span class="hotkey">Hold V</span> + click &amp; drag mouse to scale layer
+  </div>
+  
+
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ PAINT SURFACE ═══════════ -->
+<section class="section" id="paint-surface">
+  <h2 class="section-title">Paint Surface</h2>
+  <p class="section-desc">Controls which objects receive paint and which should be treated as transparent.</p>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Paint On</h3>
+    <p class="subsection-desc">Choose which meshes are valid for paint.</p>
+  </div>
+  <div class="field-grid">
+    <div class="field">
+      <p class="field-desc">Controls the scope of paintable geometry.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">All</span>
+        <span class="enum-opt">Single Object</span>
+        <span class="enum-opt">Collection</span>
+      </div>
+      <div class="field-meta">
+        <span><strong>All:</strong> Paint on every mesh on scene</span>
+        <span><strong>Single Object:</strong> Only the chosen mesh</span>
+        <span><strong>Collection:</strong> Only meshes in the chosen collection</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-block" style="margin-top:24px">
+    <img src="" />
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Skip Transparent</h3>
+    <p class="subsection-desc">The add-on does <strong>not</strong> automatically detect transparent materials. If your scene contains objects that should let light pass through, you must mark them here manually — otherwise the depth pass treats them as solid and they will incorrectly block light and receive paint.</p>
+  </div>
+  <div class="field-grid">
+    <div class="field">
+      <p class="field-desc">Objects listed here are excluded from both receiving paint <strong>and</strong> blocking light. They become invisible to the light's depth pass, so light passes through them as if they don't exist.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">None</span>
+        <span class="enum-opt">Single Object</span>
+        <span class="enum-opt">Collection</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="img-block" style="margin-top:24px">
+    <img src="" />
+  </div>
+
+  <div class="callout" style="margin-top:16px">
+    <strong>When to use:</strong> Glass windows, translucent curtains, fog/dust volume boxes, wireframe or grid meshes, anything with a transparent/translucent shader, and objects used for volumetric effects. If light is being incorrectly blocked by a see-through object, add it here.
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ PAINT MODE ═══════════ -->
+<section class="section" id="paint-mode">
+  <h2 class="section-title">Paint Mode</h2>
+  <p class="section-desc">Controls the coordinate space and color blending method used during painting. In both modes, you paint through the camera/viewport — the difference is how the paint projects onto the light texture.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Paint Space</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">In both modes you paint through the camera/viewport view. The difference is how the brush shape is projected onto the light texture:</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">Camera Space</span>
+        <span class="enum-opt">Light Space</span>
+      </div>
+      <div class="mode-card-detail">
+      <p class="field-desc" style="margin-bottom: 8px;">
+        <span><strong>Camera Space:</strong> The paint appears exactly as shown on screen. The brush falloff in the viewport maps 1:1 to the painted result — what you see is what you get. Gradient colors are blended in screen space before being projected onto the light texture.</span>
+      </p>
+      <p class="field-desc">
+        <span><strong>Light Space:</strong> Brush stroke calculations (shape, size, and falloff) and gradient blending are performed in light texture space — only the brush center position and the gradient start and end points are taken from the viewport. As a result, the paint may appear distorted in the viewport depending on the light's distance and angle.</span>
+      </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:16px">
+    <span><strong>When to use Light Space:</strong> When you need the result to look more "natural" — since painting is done in the light's own coordinate space, colors and shadows follow the light's behavior directly. It can also be useful as a fallback when Camera Space Paint fails to cover some light texels, which can happen with geometry at steep angles to the light or in complex scenes where the camera-to-light projection misses some texels along shadow boundaries.</span>
+  </div>
+
+  <!-- IMAGE: Camera Space vs Light Space comparison slider -->
+  <div class="compare-widget" id="compare-paintspace">
+    <div class="compare-tabs">
+      <button class="compare-tab is-active" data-compare="paintspace" data-idx="0">Viewport Result</button>
+      <button class="compare-tab" data-compare="paintspace" data-idx="1">Light Texture</button>
+    </div>
+    <div class="compare-body" data-compare-id="paintspace">
+      <!-- Slide 0: Scene comparison -->
+      <div class="compare-slide" data-slide="0" data-active="true">
+        <div class="compare-layer compare-layer--a">
+          <div class="compare-placeholder" style="background: linear-gradient(135deg, #1a1520 0%, #2a2035 40%, #3a2a45 100%);">
+            <span class="ph-icon">📷</span>
+            <span class="ph-label">Camera Space — Scene View</span>
+            <span>Replace with your screenshot</span>
+          </div>
+          <span class="compare-label compare-label--left">Camera Space</span>
+        </div>
+        <div class="compare-layer compare-layer--b">
+          <div class="compare-placeholder" style="background: linear-gradient(135deg, #151a20 0%, #202a35 40%, #2a3545 100%);">
+            <span class="ph-icon">💡</span>
+            <span class="ph-label">Light Space — Scene View</span>
+            <span>Replace with your screenshot</span>
+          </div>
+          <span class="compare-label compare-label--right">Light Space</span>
+        </div>
+        <div class="compare-divider"></div>
+        <div class="compare-handle"><svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/></svg></div>
+      </div>
+      <!-- Slide 1: Light texture comparison -->
+      <div class="compare-slide" data-slide="1" data-active="false">
+        <div class="compare-layer compare-layer--a">
+          <div class="compare-placeholder" style="background: linear-gradient(135deg, #201515 0%, #352020 40%, #452a2a 100%);">
+            <span class="ph-icon">📷</span>
+            <span class="ph-label">Camera Space — Light Texture</span>
+            <span>Replace with your screenshot</span>
+          </div>
+          <span class="compare-label compare-label--left">Camera Space</span>
+        </div>
+        <div class="compare-layer compare-layer--b">
+          <div class="compare-placeholder" style="background: linear-gradient(135deg, #151520 0%, #202035 40%, #2a2a45 100%);">
+            <span class="ph-icon">💡</span>
+            <span class="ph-label">Light Space — Light Texture</span>
+            <span>Replace with your screenshot</span>
+          </div>
+          <span class="compare-label compare-label--right">Light Space</span>
+        </div>
+        <div class="compare-divider"></div>
+        <div class="compare-handle"><svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/></svg></div>
+      </div>
+    </div>
+    <div class="compare-caption">Drag the slider to compare Camera Space vs Light Space. Use the tabs to switch between the scene view and the raw light texture.</div>
+  </div>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Color Space (Blend Space)</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">The color space in which paint is blended over existing texture pixels. Different spaces produce different midtone hues when mixing. See <a href="#color-spaces" style="color:var(--accent2)">Color Spaces</a>.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">sRGB</span>
+        <span class="enum-opt">Linear</span>
+        <span class="enum-opt">OKLab</span>
+        <span class="enum-opt">OKLCh</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ BRUSH SETTINGS ═══════════ -->
+<section class="section" id="brush">
+  <h2 class="section-title">Brush Tool</h2>
+
+  <div class="field-grid">
+
+    <!-- Mode -->
+    <div class="param-group">
+      <div class="param-group-title">Mode</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Brush Mode</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Switch between painting and erasing.</p>
+          <div class="param-chips">
+            <span class="enum-opt is-default">Paint</span>
+            <span class="enum-opt">Erase</span>
+          </div>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Color</span>
+          <span class="param-default">default: white</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">The color applied by each brush stamp. Disabled when Erase mode is selected.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shape -->
+    <div class="param-group">
+      <div class="param-group-title">Shape</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Size</span>
+          <span class="param-default">default: 32</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Radius of the brush circle. In <strong>Camera Space</strong> the unit is viewport pixels — the brush is exactly the size you see on screen. In <strong>Light Space</strong> the unit is light texture texels — the brush maps directly to the gobo resolution. Range: 1 – 1024.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Hardness</span>
+          <span class="param-default">default: 0.5</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Edge sharpness. At 0 the brush fades softly from center to edge. At 1 it has a crisp hard boundary.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Strength</span>
+          <span class="param-default">default: 1.0</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Maximum opacity cap per stroke. Even at full flow, the stroke won't exceed this value.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Flow</span>
+          <span class="param-default">default: 1.0</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Rate of paint accumulation per stamp. Low values (0.05 – 0.2) build up colour gradually; at 1.0 full colour is applied in a single stamp.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Falloff -->
+    <div class="param-group">
+      <div class="param-group-title">Falloff</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Falloff Curve</span>
+          <span class="param-default">default: Cubic</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Mathematical curve controlling how opacity transitions from the brush center to its edge.</p>
+          <div class="param-chips">
+            <span class="enum-opt">Linear</span>
+            <span class="enum-opt">Cubic</span>
+            <span class="enum-opt">Quintic</span>
+            <span class="enum-opt">Gaussian</span>
+            <span class="enum-opt is-default">Cosine²</span>
+            <span class="enum-opt">Blended</span>
+          </div>
+        </div>
+      </div>
+      <!-- Falloff curves combined graph -->
+      <div style="padding: 0 20px 16px;">
+        <canvas id="falloff-curves-graph" width="700" height="310" style="width:100%; height:auto; border-radius:var(--radius-sm); border:1px solid var(--border); display:block;"></canvas>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Gamma</span>
+          <span class="param-default">default: 1.0</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Gamma correction applied on top of the falloff curve. Below 1 = softer edges, above 1 = harder edges. Range: 0.1 – 2.0</p>
+        </div>
+      </div>
+      <!-- Gamma visual comparison (Cubic curve, varying gamma) -->
+      <div class="param-img-strip">
+        <div class="param-img-item">
+          <div class="param-img-thumb"><canvas data-falloff="CUBIC" data-hardness="0.5" data-gamma="0.1" width="240" height="160"></canvas></div>
+          <span class="param-img-caption">γ = 2.0</span>
+        </div>
+        <div class="param-img-item">
+          <div class="param-img-thumb"><canvas data-falloff="CUBIC" data-hardness="0.5" data-gamma="0.5" width="240" height="160"></canvas></div>
+          <span class="param-img-caption">γ = 1.5</span>
+        </div>
+        <div class="param-img-item">
+          <div class="param-img-thumb"><canvas data-falloff="CUBIC" data-hardness="0.5" data-gamma="1.0" width="240" height="160"></canvas></div>
+          <span class="param-img-caption">γ = 1.0</span>
+        </div>
+        <div class="param-img-item">
+          <div class="param-img-thumb"><canvas data-falloff="CUBIC" data-hardness="0.5" data-gamma="1.5" width="240" height="160"></canvas></div>
+          <span class="param-img-caption">γ = 0.5</span>
+        </div>
+        <div class="param-img-item">
+          <div class="param-img-thumb"><canvas data-falloff="CUBIC" data-hardness="0.5" data-gamma="2.0" width="240" height="160"></canvas></div>
+          <span class="param-img-caption">γ = 0.1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-processing -->
+    <div class="param-group">
+      <div class="param-group-title">Post-processing</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Add Blur</span>
+          <span class="param-default">default: Off</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Applies a blur to the brush stroke after each stamp. Smooths out jagged edges and creates softer paint effects.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Blur Radius</span>
+          <span class="param-default">default: 1 texel</span>
+          <div><span class="param-cond">when Blur is ON</span></div>
+        </div>
+        <div class="param-info">
+          
+          <p class="param-desc">Measured in <em>light texture texels</em>, not screen pixels. A radius of 1 = 1 pixel in the actual light texture, regardless of viewport zoom.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Blur Kernel</span>
+          <span class="param-default">default: SCurve</span>
+          <div><span class="param-cond">when Blur is ON</span></div>
+        </div>
+        <div class="param-info">
+          
+          <p class="param-desc">Shape of the blur kernel. <strong>SCurve</strong> is fast but may look boxy at large radii. <strong>Gaussian</strong> stays rounder and smoother.</p>
+          <div class="param-chips">
+            <span class="enum-opt is-default">SCurve</span>
+            <span class="enum-opt">Gaussian</span>
+          </div>
+        </div>
+      </div>
+      <!-- Blur comparison image -->
+      <div style="margin: 0; position: relative; border-top: 1px solid var(--border); overflow: hidden;">
+        <div class="compare-placeholder" style="background: linear-gradient(135deg, #18151a 0%, #282030 40%, #382a42 100%); aspect-ratio: 16/9; position: relative;">
+          <span style="position:absolute; top:12px; left:12px; padding:3px 10px; border-radius:4px; background:#000a; backdrop-filter:blur(6px); font-size:11px; font-weight:600; font-family:var(--font-mono); color:#fffc;">Blur ON</span>
+          <span style="position:absolute; bottom:12px; right:12px; padding:3px 10px; border-radius:4px; background:#000a; backdrop-filter:blur(6px); font-size:11px; font-weight:600; font-family:var(--font-mono); color:#fffc;">Blur OFF</span>
+          <span>Replace with screenshot</span>
+        </div>
+        <div style="padding:10px 14px; font-size:11.5px; color:var(--text-dim); border-top:1px solid var(--border); font-style:italic;">Brush settings: Hardness = 1.0, Blur = 1 texel, Kernel = Gaussian. Left half shows blur applied, right half shows the raw stroke without blur.</div>
+      </div>
+    </div>
+
+    <div class="param-group">
+      <div class="param-group-title">Camera Space Only</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Brush Clipping</span>
+          <span class="param-default">default: ON</span>
+        </div>
+        <div class="param-info">
+          <p><span class="param-cond">when Blur is OFF</span></p>
+          <p class="param-desc">Prevents painting texels at the edge of the brush stroke footprint to avoid bright halos at the boundary. Most visible effect when painting near the edge of shadow.</p>
+        </div>
+      </div>
+      <!-- Edge Protection comparison slider -->
+      <div class="compare-widget compare-widget--compact" style="border: 0;border-radius: 0;">
+        <div class="compare-body" data-compare-id="edgeprot">
+          <div class="compare-slide" data-slide="0" data-active="true">
+            <div class="compare-layer compare-layer--a">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #1a1218 0%, #2a1e28 40%, #3a2838 100%);">
+                <span class="ph-icon">🚫</span>
+                <span class="ph-label">Brush Clipping OFF</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--left">OFF</span>
+            </div>
+            <div class="compare-layer compare-layer--b">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #121a18 0%, #1e2a28 40%, #283a38 100%);">
+                <span class="ph-icon">✅</span>
+                <span class="ph-label">Brush Clipping ON</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--right">ON</span>
+            </div>
+            <div class="compare-divider"></div>
+            <div class="compare-handle"><svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/></svg></div>
+          </div>
+        </div>
+        <div class="compare-caption">Drag to compare. Left: bright halo at texture edge. Right: clean boundary with Brush Clipping enabled.</div>
+      </div>
+    </div>
+    <!-- Light Space -->
+    <div class="param-group">
+      <div class="param-group-title">Light Space Only</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Surface Projection</span>
+          <span class="param-default">default: Raycast</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">How the mouse position is mapped to the light texture when painting in Light Space.</p>
+          <div class="param-chips">
+            <span class="enum-opt is-default">Raycast</span>
+            <span class="enum-opt">Plane</span>
+          </div>
+        </div>
+      </div>
+      <div class="param-row param-sub">
+        <div class="param-label">
+          <span class="param-name">Raycast</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Traces a ray from the camera through the mouse position and hits the scene geometry each frame. Accurate on curved and complex surfaces. When the cursor moves over an area with no geometry (empty space, sky), the add-on automatically falls back to Plane mode until the cursor returns to a surface.</p>
+        </div>
+      </div>
+      <div class="param-row param-sub">
+        <div class="param-label">
+          <span class="param-name">Plane</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Establishes a paint plane on the first click, then projects all subsequent mouse positions onto that flat plane. Better for flat surfaces and avoids jitter on noisy or high-poly geometry.</p>
+        </div>
+      </div>
+      <!-- Surface projection comparison slider -->
+      <div class="compare-widget compare-widget--compact" style="border:0; border-radius: 0;">
+        <div class="compare-tabs">
+          <button class="compare-tab is-active" data-compare="surfproj" data-idx="0">Viewport Result</button>
+          <button class="compare-tab" data-compare="surfproj" data-idx="1">Light Texture</button>
+        </div>
+        <div class="compare-body" data-compare-id="surfproj">
+          <div class="compare-slide" data-slide="0" data-active="true">
+            <div class="compare-layer compare-layer--a">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #181520 0%, #282035 40%, #382a45 100%);">
+                <span class="ph-icon">🎯</span>
+                <span class="ph-label">Raycast — Scene View</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--left">Raycast</span>
+            </div>
+            <div class="compare-layer compare-layer--b">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #151820 0%, #202835 40%, #2a3545 100%);">
+                <span class="ph-icon">📐</span>
+                <span class="ph-label">Plane — Scene View</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--right">Plane</span>
+            </div>
+            <div class="compare-divider"></div>
+            <div class="compare-handle"><svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/></svg></div>
+          </div>
+          <div class="compare-slide" data-slide="1" data-active="false">
+            <div class="compare-layer compare-layer--a">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #201518 0%, #352028 40%, #452a38 100%);">
+                <span class="ph-icon">🎯</span>
+                <span class="ph-label">Raycast — Light Texture</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--left">Raycast</span>
+            </div>
+            <div class="compare-layer compare-layer--b">
+              <div class="compare-placeholder" style="background: linear-gradient(135deg, #151520 0%, #202035 40%, #2a2a45 100%);">
+                <span class="ph-icon">📐</span>
+                <span class="ph-label">Plane — Light Texture</span>
+                <span>Replace with screenshot</span>
+              </div>
+              <span class="compare-label compare-label--right">Plane</span>
+            </div>
+            <div class="compare-divider"></div>
+            <div class="compare-handle"><svg viewBox="0 0 24 24"><path d="M8 5l-5 7 5 7M16 5l5 7-5 7"/></svg></div>
+          </div>
+        </div>
+        <div class="compare-caption">Drag to compare Raycast vs Plane projection. Use tabs to switch between the scene view and the light texture result.</div>
+      </div>
+
+      
+    </div>
+
+  </div>
+
+  <div class="callout callout--blue" style="margin-top:16px">
+    <strong>Selection Shortcuts</strong> (when a selection is active):<br>
+    <span class="hotkey">Ctrl+D</span> Clear selection &nbsp; <span class="hotkey">Ctrl+I</span> Invert selection &nbsp; <span class="hotkey">Ctrl+G</span> Move selection
+  </div>
+
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ GRADIENT SETTINGS ═══════════ -->
+<section class="section" id="gradient">
+  <h2 class="section-title">Gradient Tool</h2>
+  <p class="section-desc">Click and drag in the viewport to draw a gradient between two points.</p>
+
+  <div class="field-grid">
+
+    <!-- Shape -->
+    <div class="param-group">
+      <div class="param-group-title">Shape</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Type</span>
+          <span class="param-default">default: Linear</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Shape of the gradient.</p>
+          <div class="param-chips">
+            <span class="enum-opt is-default">Linear</span>
+            <span class="enum-opt">Radial</span>
+          </div>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Falloff</span>
+          <span class="param-default">default: Smooth</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Interpolation curve controlling how colors blend along the gradient.</p>
+          <div class="param-chips">
+            <span class="enum-opt is-default">Smooth</span>
+            <span class="enum-opt">Linear</span>
+            <span class="enum-opt">Ease In</span>
+            <span class="enum-opt">Ease Out</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color -->
+    <div class="param-group">
+      <div class="param-group-title">Color</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Color Space</span>
+          <span class="param-default">default: OKLCh</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">The space in which the two endpoint colors are interpolated. Different spaces produce different midtone hues. See <a href="#color-spaces" style="color:var(--accent2)">Color Spaces</a>.</p>
+          <div class="param-chips">
+            <span class="enum-opt">sRGB</span>
+            <span class="enum-opt">Linear</span>
+            <span class="enum-opt">OKLab</span>
+            <span class="enum-opt is-default">OKLCh</span>
+          </div>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Start Color (A)</span>
+          <span class="param-default">default: black</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Color at the drag start point. In radial mode this is the center.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Start Strength (A)</span>
+          <span class="param-default">default: 1.0</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Opacity at the start point of the gradient.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">End Color (B)</span>
+          <span class="param-default">default: white</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Color at the drag end point. In radial mode this is the outer edge.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">End Strength (B)</span>
+          <span class="param-default">default: 1.0</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Opacity at the end point of the gradient.</p>
+        </div>
+      </div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Swap A/B</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Swaps start and end colors (and their strengths) with one click. Reverses the gradient without re-dragging. Press <span class="hotkey">X</span> to switch colors during preview</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post-processing -->
+    <div class="param-group">
+      <div class="param-group-title">Post-processing</div>
+      <div class="param-row">
+        <div class="param-label">
+          <span class="param-name">Add Blur</span>
+          <span class="param-default">default: Off</span>
+        </div>
+        <div class="param-info">
+          <p class="param-desc">Adds subtle noise/blur to the gradient to reduce banding artifacts, especially visible at lower texture resolutions.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:16px">
+    <div class="callout callout--blue" style="margin: 0;">
+      <strong>Gradient Tool:</strong> The Gradient tool always uses the Raycast method when in Light Space mode — the start and end points of the drag are raycast onto the scene to determine their positions in the light's UV space. This setting only affects the Brush tool.
+    </div>
+  </div>
+
+  <div class="callout callout--blue" style="margin-top:16px">
+    <strong>Selection Shortcuts</strong> (when a selection is active):<br>
+    <span class="hotkey">Ctrl+D</span> Clear selection &nbsp; <span class="hotkey">Ctrl+I</span> Invert selection &nbsp; <span class="hotkey">Ctrl+G</span> Move selection
+  </div>
+
+</section>
+
+<hr class="sep">
+
+
+<section class="section" id="selection">
+  <h2 class="section-title">Selection Tool</h2>
+  <p class="section-desc">Create a mask that restricts painting — areas outside the selection are protected.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Selection Shape</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">Geometric method to draw the selection.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">Rectangle</span>
+        <span class="enum-opt">Polygon</span>
+        <span class="enum-opt">Lasso</span>
+        <span class="enum-opt">Brush</span>
+      </div>
+      <div class="field-meta">
+        <span><strong>Rectangle:</strong> Click-drag box</span>
+        <span><strong>Polygon:</strong> Click points; Enter to close</span>
+        <span><strong>Lasso:</strong> Freehand drag; release to close</span>
+        <span><strong>Brush:</strong> Paint with a circular brush (size 1–500, default 35)</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Selection Mode</span>
+        <span class="field-type type-enum">Enum</span>
+      </div>
+      <p class="field-desc">How a new selection interacts with the existing one.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">New</span>
+        <span class="enum-opt">Add</span>
+        <span class="enum-opt">Subtract</span>
+        <span class="enum-opt">Intersect</span>
+      </div>
+      <p class="field-desc" style="margin-top: 12px;">While making a selection, hold <span class="hotkey">Shift</span> to switch mode to Add, <span class="hotkey">Ctrl</span> to Subtract, or <span class="hotkey">Alt</span> to Intersect with the existing selection.</p>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Clear</span>
+        <span class="field-type type-action">Operators</span>
+      </div>
+      <p class="field-desc">Removes the mask so all pixels are paintable.</p>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Invert</span>
+        <span class="field-type type-action">Operators</span>
+      </div>
+      <p class="field-desc">Swaps selected/unselected.</p>
+    </div>
+  </div>
+
+  <div class="callout callout--blue" style="margin-top:16px">
+    <strong>Selection Shortcuts</strong>: 
+    <span class="hotkey">Ctrl+D</span> Clear selection &nbsp; <span class="hotkey">Ctrl+I</span> Invert selection &nbsp; <span class="hotkey">Ctrl+G</span> Move selection
+  </div>
+</section>
+
+<hr class="sep">
+
+
+<section class="section" id="preview">
+  <h2 class="section-title">Preview Mode</h2>
+  <p class="section-desc">Controls the real-time overlay that displays the painting result directly in the viewport as you paint.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Overlay Mode</span>
+      </div>
+      <p class="field-desc"><strong>Paint Only</strong> — previews only what is currently being drawn, while the rest of the scene renders normally. <strong>All Masks</strong> — overlays the full light texture and mask over the entire viewport, highlighting unpaintable areas in red, so you can see exactly where the light reaches and where it's blocked.</p>
+      <div class="enum-opts">
+        <span class="enum-opt is-default">Paint Only</span>
+        <span class="enum-opt">All Masks</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Falloff Mode</span>
+      </div>
+      <p class="field-desc"><strong>Raw Color</strong> — displays the color exactly as it will be written to the light texture. <strong>Light Falloff</strong> — shows the real result as it will appear in the scene, including surface normal contribution, distance attenuation, tonemapping, exposure, gamma, and all other factors that define how Blender renders the light.</p>
+      <div class="enum-opts">
+        <span class="enum-opt">Raw Color</span>
+        <span class="enum-opt is-default">Light Falloff</span>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Light Blur</span>
+      </div>
+      <p class="field-desc">Enabled by default. When ON, the preview mimics how Blender spreads the light based on the light source's physical size — matching the actual light edge softness you'll see in the final render. Without this, the preview ignores the light source size entirely, so the light texture appear perfectly sharp regardless of how large the light is. The <strong>Multiplier</strong> (default 1.0) scales the auto-calculated blur amount — above 1 = exaggerated softness, below 1 = sharper than real.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ ADVANCED SETTINGS ═══════════ -->
+<section class="section" id="advanced">
+  <h2 class="section-title">Advanced Settings</h2>
+  <p class="section-desc">Defaults work for most scenes — only tweak if you see artifacts.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Near / Far Clip</span>
+      </div>
+      <p class="field-desc">Light frustum clipping. Increase Far for large scenes; decrease Near if close objects clip.</p>
+      <div class="field-meta"><span><strong>Near:</strong> 0.05</span> <span><strong>Far:</strong> 80.0</span></div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Surface Bias</span>
+      </div>
+      <p class="field-desc">Offsets paint along normals to prevent shadow acne. Increase if speckled.</p>
+      <div class="field-meta"><span><strong>Default:</strong> 1.0</span></div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Shadow Softness / Bleed Reduction</span>
+      </div>
+      <p class="field-desc"><strong>Softness</strong> — PCF blur (1 = sharp, 5 = soft). <strong>Bleed Reduction</strong> — VSM power to prevent light leaking through thin objects.</p>
+      <div class="field-meta"><span><strong>Softness:</strong> 2</span> <span><strong>Bleed:</strong> 10.0</span></div>
+    </div>
+    <div class="field">
+      <div class="field-header">
+        <span class="field-name">Capture Resolution</span>
+        <span class="field-type type-enum">Light + Camera</span>
+      </div>
+      <p class="field-desc">Resolution of internal depth buffers for shadow edges and paint placement. Both default to 2048.</p>
+      <div class="enum-opts">
+        <span class="enum-opt">512</span>
+        <span class="enum-opt">1024</span>
+        <span class="enum-opt is-default">2048</span>
+        <span class="enum-opt">4096</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep">
+
+<!-- ═══════════ COLOR SPACES ═══════════ -->
+<section class="section" id="color-spaces">
+  <h2 class="section-title">Color Spaces</h2>
+  <p class="section-desc">Defines how colors are blended and interpolated in gradients. The choice affects what the in-between colors look like when mixing two colors together.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <div class="field-header"><span class="field-name">OKLCh</span></div>
+      <p class="field-desc">Blends colors by rotating through hues, keeping them vivid and saturated in the middle. Great for colorful gradients. Can produce a slight brightness boost at the midpoint.</p>
+    </div>
+    <div class="field">
+      <div class="field-header"><span class="field-name">OKLab</span></div>
+      <p class="field-desc">Blends colors while keeping brightness consistent throughout. Transitions look smooth and even, though the midpoint may appear slightly less saturated.</p>
+    </div>
+    <div class="field">
+      <div class="field-header"><span class="field-name">Linear</span></div>
+      <p class="field-desc">Mimics how real colored lights mix in the physical world. Accurate and natural, but the midpoint can appear a bit brighter than expected.</p>
+    </div>
+    <div class="field">
+      <div class="field-header"><span class="field-name">sRGB</span></div>
+      <p class="field-desc">A straightforward blend in display color space — the same way most image editors mix colors. Middle colors tend to look darker.</p>
+    </div>
+  </div>
+
+
+  <div style="margin-top:24px;">
+    <div style="position:relative; width:100%; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:var(--bg-card);">
+      <iframe
+        width="100%"
+        height="400"
+        style="display:block; border:none;"
+        src="https://www.shadertoy.com/embed/33KyDK?gui=true&t=10&paused=true&muted=false"
+        allowfullscreen
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; fullscreen; webgl; webgl2"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        loading="lazy"
+      ></iframe>
+      <noscript>
+        <div style="padding:40px; text-align:center; color:var(--text-dim); font-family:var(--font-mono); font-size:12px;">
+          JavaScript is required to load the Shadertoy embed.
+        </div>
+      </noscript>
+    </div>
+    <p style="font-size:11.5px; color:var(--text-dim); margin-top:8px; font-style:italic;">If the embed doesn't load, your browser may block third-party iframes. Use the direct link below instead.</p>
+    <a class="ext-link" href="https://www.shadertoy.com/view/33KyDK" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16"><path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/></svg>
+      Open Color Space Comparison on Shadertoy
+    </a>
+    </div>
+</section>
+
+<div style="margin-top:80px; padding-top:32px; border-top:1px solid var(--border); text-align:center; color:var(--text-dim); font-size:12px;">
+  Light Painter &copy; 2026 &middot; <a href="https://x.com/ShaderError" style="color:var(--accent); text-decoration:none;">@ShaderError</a>
+</div>
+
+</main>
+
+<script>
+(function() {
+  // ═══════════ Falloff Canvas Rendering ═══════════
+  // Exact math from compute_radial_weight() in utils.py
+
+  function falloffWeight(phi, hardness, curveType, gamma) {
+    if (phi <= hardness) return 1.0;
+    if (phi >= 1.0) return 0.0;
+
+    var softness = 1.0 - hardness;
+    var t = (phi - hardness) / softness;
+    t = Math.max(0, Math.min(1, t));
+
+    // Apply Schlick bias to t before curve evaluation
+    if (Math.abs(gamma - 1.0) > 0.01) {
+      var bias = 1.0 / (1.0 + Math.max(gamma, 0.01));
+      var invBiasTerm = 1.0 / Math.max(bias, 1e-6) - 2.0;
+      t = t / (invBiasTerm * (1.0 - t) + 1.0);
+      t = Math.max(0, Math.min(1, t));
+    }
+
+    var w;
+
+    switch (curveType) {
+      case 'LINEAR':
+        // Simple linear falloff
+        w = 1.0 - t;
+        break;
+
+      case 'CUBIC':
+        // Smoothstep: w = 1 - t²(3-2t), then squared
+        var s = t * t * (3.0 - 2.0 * t);
+        w = 1.0 - s;
+        w = w * w;
+        break;
+
+      case 'QUINTIC':
+        // C2 continuous: w = 1 - t³(6t² - 15t + 10)
+        w = 1.0 - t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+        break;
+
+      case 'GAUSS':
+        var sigma = 0.4;
+        w = Math.exp(-t * t / (2.0 * sigma * sigma));
+        var wMin = Math.exp(-1.0 / (2.0 * sigma * sigma));
+        w = (w - wMin) / (1.0 - wMin);
+        w = Math.max(0, Math.min(1, w));
+        break;
+
+      case 'COS2':
+        // Squared cosine (simplified, no softness dependency)
+        var cosVal = Math.cos(t * Math.PI / 2.0);
+        w = cosVal * cosVal;
+        break;
+
+      case 'BLEND':
+      default:
+        // Quintic + Cubic blend (50/50)
+        var wq = 1.0 - t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
+        var s = t * t * (3.0 - 2.0 * t);
+        var wc = 1.0 - s;
+        wc = wc * wc;
+        w = wc * 0.5 + wq * 0.5;
+        break;
+    }
+
+    return Math.max(0, Math.min(1, w));
+  }
+
+  // Render a radial brush preview
+  function renderRadial(canvas) {
+    var curve = canvas.dataset.falloff || 'CUBIC';
+    var hardness = parseFloat(canvas.dataset.hardness) || 0.5;
+    var gamma = parseFloat(canvas.dataset.gamma) || 1.0;
+
+    var W = canvas.width;
+    var H = canvas.height;
+    var ctx = canvas.getContext('2d');
+    var img = ctx.createImageData(W, H);
+    var data = img.data;
+
+    var cx = W * 0.5;
+    var cy = H * 0.5;
+    var R = Math.min(cx, cy) * 0.88;
+    var bgR = 30, bgG = 30, bgB = 38;
+
+    for (var y = 0; y < H; y++) {
+      for (var x = 0; x < W; x++) {
+        var dx = x - cx, dy = y - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var phi = dist / R;
+        var w = falloffWeight(phi, hardness, curve, gamma);
+
+        var idx = (y * W + x) * 4;
+        data[idx]     = bgR + (255 - bgR) * w | 0;
+        data[idx + 1] = bgG + (255 - bgG) * w | 0;
+        data[idx + 2] = bgB + (255 - bgB) * w | 0;
+        data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  // Render combined falloff curves graph (all 5 curves overlaid)
+  function renderCombinedGraph() {
+    var canvas = document.getElementById('falloff-curves-graph');
+    if (!canvas) return;
+
+    var hardness = 0.5;
+    var gamma = 1.0;
+    var W = canvas.width;
+    var H = canvas.height;
+    var ctx = canvas.getContext('2d');
+
+    var padL = 44, padR = 20, padT = 24, padB = 34;
+    var gW = W - padL - padR;
+    var gH = H - padT - padB;
+
+    // X-axis range: phi 0.25 → 1.0 (skip flat plateau)
+    var phiMin = 0.25, phiMax = 1.0;
+    function sx(phi) { return padL + ((phi - phiMin) / (phiMax - phiMin)) * gW; }
+
+    // Background
+    ctx.fillStyle = '#1e1e26';
+    ctx.fillRect(0, 0, W, H);
+
+    // Horizontal grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + gH * (1 - g / 4);
+      ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(padL + gW, gy); ctx.stroke();
+    }
+    // Vertical grid
+    var vTicks = [0.25, 0.5, 0.75, 1.0];
+    for (var v = 0; v < vTicks.length; v++) {
+      var vx = sx(vTicks[v]);
+      ctx.beginPath(); ctx.moveTo(vx, padT); ctx.lineTo(vx, padT + gH); ctx.stroke();
+    }
+
+    // Y-axis line
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + gH); ctx.stroke();
+
+    // Hardness marker
+    var hxScreen = sx(hardness);
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(hxScreen, padT); ctx.lineTo(hxScreen, padT + gH); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Hardness label
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('hardness', hxScreen, padT - 4);
+
+    // Curves
+    var curves = [
+      { type: 'LINEAR',  color: '#888898', label: 'Linear' },
+      { type: 'CUBIC',   color: '#f0a030', label: 'Cubic' },
+      { type: 'QUINTIC', color: '#60a8ff', label: 'Quintic' },
+      { type: 'GAUSS',   color: '#a070f0', label: 'Gaussian' },
+      { type: 'COS2',    color: '#50d8a0', label: 'Cosine\u00B2' },
+      { type: 'BLEND',   color: '#e85050', label: 'Blended' },
+    ];
+
+    // Draw curves (phi from phiMin to phiMax)
+    var steps = 600;
+    for (var c = 0; c < curves.length; c++) {
+      var cur = curves[c];
+      if (cur.dash) ctx.setLineDash(cur.dash); else ctx.setLineDash([]);
+      ctx.beginPath();
+      for (var i = 0; i <= steps; i++) {
+        var phi = phiMin + (i / steps) * (phiMax - phiMin);
+        var w = falloffWeight(phi, hardness, cur.type, gamma);
+        var px = sx(phi);
+        var py = padT + gH - w * gH;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = cur.color;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // Y-axis labels
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('1.0', padL - 8, padT);
+    ctx.fillText('0.5', padL - 8, padT + gH * 0.5);
+    ctx.fillText('0', padL - 8, padT + gH);
+
+    // X-axis labels
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillText('0.25', sx(0.25), padT + gH + 8);
+    ctx.fillText('0.5', sx(0.5), padT + gH + 8);
+    ctx.fillText('0.75', sx(0.75), padT + gH + 8);
+    ctx.fillText('1.0', sx(1.0), padT + gH + 8);
+
+    // Legend (top-right)
+    var legX = padL + gW - 6;
+    var legY = padT + 14;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.font = '11px sans-serif';
+    for (var c = 0; c < curves.length; c++) {
+      var cur = curves[c];
+      var ly = legY + c * 19;
+      if (cur.dash) ctx.setLineDash(cur.dash); else ctx.setLineDash([]);
+      ctx.strokeStyle = cur.color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(legX - 70, ly); ctx.lineTo(legX - 54, ly); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = cur.color;
+      ctx.fillText(cur.label, legX, ly);
+    }
+  }
+
+  // Render all canvases
+  renderCombinedGraph();
+  document.querySelectorAll('canvas[data-falloff]').forEach(function(canvas) {
+    renderRadial(canvas);
+  });
+
+
+  // ═══════════ Image Comparison Slider ═══════════
+
+  document.querySelectorAll('.compare-body').forEach(function(body) {
+    var dragging = false;
+
+    function activeSlide() {
+      return body.querySelector('.compare-slide[data-active="true"]');
+    }
+
+    function setPosition(pctRaw) {
+      var pct = Math.max(2, Math.min(98, pctRaw));
+      var slide = activeSlide();
+      if (!slide) return;
+      slide.querySelector('.compare-layer--b').style.clipPath = 'inset(0 0 0 ' + pct + '%)';
+      slide.querySelector('.compare-divider').style.left = pct + '%';
+      slide.querySelector('.compare-handle').style.left  = pct + '%';
+    }
+
+    function pctFromEvent(e) {
+      var x = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+      var rect = body.getBoundingClientRect();
+      return ((x - rect.left) / rect.width) * 100;
+    }
+
+    body.addEventListener('mousedown',  function(e) { dragging = true; setPosition(pctFromEvent(e)); });
+    body.addEventListener('touchstart', function(e) { dragging = true; setPosition(pctFromEvent(e)); }, { passive: true });
+
+    document.addEventListener('mousemove', function(e) { if (dragging) { e.preventDefault(); setPosition(pctFromEvent(e)); }});
+    document.addEventListener('touchmove', function(e) { if (dragging) setPosition(pctFromEvent(e)); }, { passive: true });
+
+    document.addEventListener('mouseup',  function() { dragging = false; });
+    document.addEventListener('touchend', function() { dragging = false; });
+  });
+
+  // ═══════════ Tab Switching ═══════════
+
+  document.querySelectorAll('.compare-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var group = tab.dataset.compare;
+      var idx   = tab.dataset.idx;
+
+      document.querySelectorAll('.compare-tab[data-compare="' + group + '"]').forEach(function(t) {
+        t.classList.toggle('is-active', t.dataset.idx === idx);
+      });
+
+      var body = document.querySelector('.compare-body[data-compare-id="' + group + '"]');
+      if (!body) return;
+
+      body.querySelectorAll('.compare-slide').forEach(function(slide) {
+        var isActive = slide.dataset.slide === idx;
+        slide.dataset.active = isActive ? 'true' : 'false';
+        if (isActive) {
+          slide.querySelector('.compare-layer--b').style.clipPath = 'inset(0 0 0 50%)';
+          slide.querySelector('.compare-divider').style.left = '50%';
+          slide.querySelector('.compare-handle').style.left  = '50%';
+        }
+      });
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
