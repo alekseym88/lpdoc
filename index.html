@@ -591,6 +591,85 @@ code {
   font-style: italic;
 }
 
+/* ── Lite / Pro Toggle ── */
+.version-toggle {
+  top: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--border-accent);
+  cursor: pointer;
+  transition: background .25s;
+  flex-shrink: 0;
+}
+.toggle-track.is-on { background: var(--accent); }
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .25s;
+  box-shadow: 0 1px 4px #0004;
+}
+.toggle-track.is-on .toggle-knob { left: 23px; }
+.toggle-label {
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  user-select: none;
+}
+.toggle-label strong { color: #fff; font-weight: 600; }
+
+/* Pro-only badge */
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #000;
+  font-size: 9.5px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+/* Lite mode active: fade pro-only elements */
+body.lite-mode [data-pro] {
+  opacity: 0.2;
+  pointer-events: none;
+  filter: grayscale(0.6);
+  transition: opacity .35s, filter .35s;
+}
+body:not(.lite-mode) [data-pro] {
+  transition: opacity .35s, filter .35s;
+}
+
+/* Pro badge hidden by default, shown in lite mode */
+.pro-badge { display: none; }
+body.lite-mode .pro-badge { display: inline-flex; }
+
+/* Nav links pro-only */
+body.lite-mode .nav-link[data-pro] {
+  opacity: 0.3;
+  text-decoration: line-through;
+}
+
 @media (max-width: 600px) {
   .param-row {
     grid-template-columns: 1fr;
@@ -812,10 +891,19 @@ code {
 </head>
 <body>
 
-
+<div class="version-toggle" id="versionToggle">
+  <span class="toggle-label"><strong>Full</strong> version</span>
+  <div class="toggle-track" id="liteToggle">
+    <div class="toggle-knob"></div>
+  </div>
+  <span class="toggle-label">Show <strong>Lite</strong> only</span>
+</div>
 
 
 <main class="main">
+
+<!-- Version Toggle -->
+
 
 <!-- HERO -->
 <section class="hero" id="overview">
@@ -901,10 +989,6 @@ code {
     <strong>Note:</strong> The light texture proportion is tied to the light size. When the size changes, all layers are automatically reset to blank with the updated proportions. If the size was changed accidentally, you can undo it using the standard shortcut (<strong>Cmd + Z</strong>)
   </div>
 
-  <div class="callout" style="margin-top:16px;border-color: red;">
-    <span><strong style="color: red;">Important:</strong> Light Painter uses viewport projection to paint onto the light texture. When a light source has a physical size, light can bleed beyond the painted region — even into shadowed areas and outside the light texture boundary. This is caused by Blender's internal algorithm for how light spreads. The current version of the add-on does not account for this effect when painting, though a future update may introduce edge protection based on light size and distance to compensate for it.</span>
-  </div>
-
 </section>
 
 <hr class="sep">
@@ -925,8 +1009,8 @@ code {
       </div>
       <p class="field-desc" style="margin-bottom: 10px;"><code>+</code> <code>−</code> — adds a new empty layer above the active layer / deletes the active layer.</p>
       <p class="field-desc" style="margin-bottom: 10px;"><code>▲</code> <code>▼</code> — reorder the active layer up (composites later, on top) or down (composites earlier, below).</p>
-      <p class="field-desc" style="margin-bottom: 10px;"><code>Duplicate</code> — creates an exact copy of the active layer including image data and all settings.</p>
-      <p class="field-desc" style="margin-bottom: 10px;"><code>Merge Visible</code> — flattens all visible layers into one; hidden layers are preserved.</p>
+      <p class="field-desc" style="margin-bottom: 10px;" data-pro><code>Duplicate</code> — creates an exact copy of the active layer including image data and all settings. <span class="pro-badge">Full</span></p>
+      <p class="field-desc" style="margin-bottom: 10px;" data-pro><code>Merge Visible</code> — flattens all visible layers into one; hidden layers are preserved. <span class="pro-badge">Full</span></p>
     </div>
   </div>
 
@@ -969,10 +1053,10 @@ code {
     </div>
   </div>
 
-  <div class="subsection">
-    <h3 class="subsection-title">Image Tex → Active Layer</h3>
+  <div class="subsection" data-pro>
+    <h3 class="subsection-title">Image Tex → Active Layer <span class="pro-badge">Full</span></h3>
   </div>
-  <div class="field-grid">
+  <div class="field-grid" data-pro>
     <div class="field">
       <div class="field-header">
         <span class="field-name">Source Image</span>
@@ -1011,7 +1095,7 @@ code {
       <p class="field-desc"><strong>Offset</strong> — translates the layer in UV space (1.0 = full texture width/height).</p>
       <p class="field-desc"><strong>Rotation</strong> — rotates around the pivot point.</p>
       <p class="field-desc"><strong>Scale</strong> — resizes from the pivot (below 1 = enlarge, above 1 = shrink, non-uniform supported).</p>
-      <p class="field-desc"><strong>Pivot</strong> — center for rotation/scale in UV space; (0.5, 0.5) = texture center, (0, 0) = bottom-left, range 0–1.</p>
+      <p class="field-desc" data-pro><strong>Pivot</strong> — center for rotation/scale in UV space; (0.5, 0.5) = texture center, (0, 0) = bottom-left, range 0–1.</p>
       <div class="field-meta">
         <span><strong>Offset:</strong> (0, 0)</span>
         <span><strong>Rotation:</strong> 0°</span>
@@ -1041,8 +1125,8 @@ code {
 <hr class="sep">
 
 <!-- ═══════════ PAINT SURFACE ═══════════ -->
-<section class="section" id="paint-surface">
-  <h2 class="section-title">Paint Surface</h2>
+<section class="section" id="paint-surface" data-pro>
+  <h2 class="section-title">Paint Surface <span class="pro-badge">Full</span></h2>
   <p class="section-desc">Controls which objects receive paint and which should be treated as transparent.</p>
 
   <div class="subsection">
@@ -1108,18 +1192,22 @@ code {
       </div>
       <p class="field-desc">In both modes you paint through the camera/viewport view. The difference is how the brush shape is projected onto the light texture:</p>
       <div class="enum-opts">
-        <span class="enum-opt is-default">Camera Space</span>
+        <span class="enum-opt is-default" data-pro>Camera Space</span>
         <span class="enum-opt">Light Space</span>
       </div>
       <div class="mode-card-detail">
-      <p class="field-desc" style="margin-bottom: 8px;">
-        <span><strong>Camera Space:</strong> The paint appears exactly as shown on screen. The brush falloff in the viewport maps 1:1 to the painted result — what you see is what you get. Gradient colors are blended in screen space before being projected onto the light texture.</span>
+      <p class="field-desc" style="margin-bottom: 8px;" data-pro>
+        <span><strong>Camera Space:</strong> The paint appears exactly as shown on screen. The brush falloff in the viewport maps 1:1 to the painted result — what you see is what you get. Gradient colors are blended in screen space before being projected onto the light texture. <span class="pro-badge">Full</span></span>
       </p>
       <p class="field-desc">
         <span><strong>Light Space:</strong> Brush stroke calculations (shape, size, and falloff) and gradient blending are performed in light texture space — only the brush center position and the gradient start and end points are taken from the viewport. As a result, the paint may appear distorted in the viewport depending on the light's distance and angle.</span>
       </p>
       </div>
     </div>
+  </div>
+
+  <div class="callout" style="margin-top:16px;border-color: red;">
+    <span><strong style="color: red;">Important:</strong> Light Painter uses viewport projection to paint onto the light texture. When a light source has a physical size, light can bleed beyond the painted region — even into shadowed areas and outside the light texture boundary. This is caused by Blender's internal algorithm for how light spreads. The current version of the add-on does not account for this effect when painting, though a future update may introduce edge protection based on light size and distance to compensate for it.</span>
   </div>
 
   <div class="callout" style="margin-top:16px">
@@ -1171,11 +1259,12 @@ code {
     <div class="compare-caption">Drag the slider to compare Camera Space Mode vs Light Space Mode. Use the tabs to switch between the scene view and the light texture result.</div>
   </div>
 
-  <div class="field-grid">
+  <div class="field-grid" data-pro>
     <div class="field">
       <div class="field-header">
         <span class="field-name">Color Space (Blend Space)</span>
         <span class="field-type type-enum">Enum</span>
+        <span class="pro-badge">Full</span>
       </div>
       <p class="field-desc">The color space in which paint is blended over existing texture pixels. Different spaces produce different midtone hues when mixing. See <a href="#color-spaces" style="color:var(--accent2)">Color Spaces</a>.</p>
       <div class="enum-opts">
@@ -1265,8 +1354,8 @@ code {
     </div>
 
     <!-- Falloff -->
-    <div class="param-group">
-      <div class="param-group-title">Falloff</div>
+    <div class="param-group" data-pro>
+      <div class="param-group-title">Falloff <span class="pro-badge">Full</span></div>
       <div class="param-row">
         <div class="param-label">
           <span class="param-name">Falloff Curve</span>
@@ -1323,8 +1412,8 @@ code {
     </div>
 
     <!-- Post-processing -->
-    <div class="param-group">
-      <div class="param-group-title">Post-processing</div>
+    <div class="param-group" data-pro>
+      <div class="param-group-title">Post-processing <span class="pro-badge">Full</span></div>
       <div class="param-row">
         <div class="param-label">
           <span class="param-name">Add Blur</span>
@@ -1371,8 +1460,8 @@ code {
       </div>
     </div>
 
-    <div class="param-group">
-      <div class="param-group-title">Camera Space Only</div>
+    <div class="param-group" data-pro>
+      <div class="param-group-title">Camera Space Only <span class="pro-badge">Full</span></div>
       <div class="param-row">
         <div class="param-label">
           <span class="param-name">Brush Clipping</span>
@@ -1407,8 +1496,8 @@ code {
       </div>
     </div>
     <!-- Light Space -->
-    <div class="param-group">
-      <div class="param-group-title">Light Space Only</div>
+    <div class="param-group" data-pro>
+      <div class="param-group-title">Light Space Only <span class="pro-badge">Full</span></div>
       <div class="param-row">
         <div class="param-label">
           <span class="param-name">Surface Projection</span>
@@ -1486,7 +1575,7 @@ code {
 
   </div>
 
-  <div class="callout callout--blue" style="margin-top:16px">
+  <div class="callout callout--blue" style="margin-top:16px" data-pro>
     <strong>Selection Shortcuts</strong> (when a selection is active):<br>
     <span class="hotkey">Ctrl+D</span> Clear selection &nbsp; <span class="hotkey">Ctrl+I</span> Invert selection &nbsp; <span class="hotkey">Ctrl+G</span> Move selection
   </div>
@@ -1496,8 +1585,8 @@ code {
 <hr class="sep">
 
 <!-- ═══════════ GRADIENT SETTINGS ═══════════ -->
-<section class="section" id="gradient">
-  <h2 class="section-title">Gradient Tool</h2>
+<section class="section" id="gradient" data-pro>
+  <h2 class="section-title">Gradient Tool <span class="pro-badge">Full</span></h2>
   <p class="section-desc">Click and drag in the viewport to draw a gradient between two points.</p>
 
   <div class="field-grid">
@@ -1631,8 +1720,8 @@ code {
 <hr class="sep">
 
 
-<section class="section" id="selection">
-  <h2 class="section-title">Selection Tool</h2>
+<section class="section" id="selection" data-pro>
+  <h2 class="section-title">Selection Tool <span class="pro-badge">Full</span></h2>
   <p class="section-desc">Create a mask that restricts painting — areas outside the selection are protected.</p>
 
   <div class="field-grid">
@@ -1694,8 +1783,8 @@ code {
 <hr class="sep">
 
 
-<section class="section" id="preview">
-  <h2 class="section-title">Preview Mode</h2>
+<section class="section" id="preview" data-pro>
+  <h2 class="section-title">Preview Mode <span class="pro-badge">Full</span></h2>
   <p class="section-desc">Controls the real-time overlay that displays the painting result directly in the viewport as you paint.</p>
 
   <div class="field-grid">
@@ -1731,8 +1820,8 @@ code {
 <hr class="sep">
 
 <!-- ═══════════ ADVANCED SETTINGS ═══════════ -->
-<section class="section" id="advanced">
-  <h2 class="section-title">Advanced Settings</h2>
+<section class="section" id="advanced" data-pro>
+  <h2 class="section-title">Advanced Settings <span class="pro-badge">Full</span></h2>
   <p class="section-desc">Defaults work for most scenes — only tweak if you see artifacts.</p>
 
   <div class="field-grid">
@@ -2143,6 +2232,16 @@ code {
       });
     });
   });
+
+  // ═══════════ Lite / Pro Toggle ═══════════
+
+  var liteToggle = document.getElementById('liteToggle');
+  if (liteToggle) {
+    liteToggle.addEventListener('click', function() {
+      this.classList.toggle('is-on');
+      document.body.classList.toggle('lite-mode');
+    });
+  }
 
 })();
 </script>
