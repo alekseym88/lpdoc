@@ -922,7 +922,7 @@ body.lite-mode .nav-link[data-pro] {
   <div class="setup-steps">
     <div class="step">
       <div class="step-title">Switch to Cycles Render Engine</div>
-      <div class="step-body">Light Painter relies on Cycles' node-based light textures (gobos). Go to <code>Render Properties</code> → <code>Render Engine</code> and set it to <strong>Cycles</strong>. EEVEE does not support the light texture nodes that this add-on creates.</div>
+      <div class="step-body">Light Painter relies on Cycles' node-based light textures (gobos). Go to <code>Render Properties</code> → <code>Render Engine</code> and set it to <code>Cycles</code>. <strong>EEVEE</strong> does not support the light texture nodes that this add-on creates. Since the add-on relies heavily on shader computation, it is strongly recommended to set  <code>Device</code> to <code>GPU Compute</code> under <strong>Render Properties</strong> for a significant performance boost — CPU rendering will still work, but GPU will be considerably faster.</div>
     </div>
     <div class="step">
       <div class="step-title">Add a Spot Light or Area Light</div>
@@ -944,7 +944,7 @@ body.lite-mode .nav-link[data-pro] {
   </div>
 
   <div class="callout" style="margin-top:20px">
-    <strong>Quick checklist:</strong> Cycles enabled → Spot or Area light → Correct Radius / Spread / Size → Pick Light in panel → Reset Light → Paint.
+    <strong>Quick checklist:</strong> Cycles enabled → Device set to GPU Compute → Add Spot or Area light → Set Correct Radius / Spread / Size → Pick Light in panel → Reset Light → Paint.
   </div>
 </section>
 
