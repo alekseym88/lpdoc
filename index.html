@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Light Painter — Blender Add-on Documentation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -591,47 +592,7 @@ code {
   font-style: italic;
 }
 
-/* ── Lite / Pro Toggle ── */
-.version-toggle {
-  top: 0;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 10px 20px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-}
-.toggle-track {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  border-radius: 12px;
-  background: var(--border-accent);
-  cursor: pointer;
-  transition: background .25s;
-  flex-shrink: 0;
-}
-.toggle-track.is-on { background: var(--accent); }
-.toggle-knob {
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left .25s;
-  box-shadow: 0 1px 4px #0004;
-}
-.toggle-track.is-on .toggle-knob { left: 23px; }
-.toggle-label {
-  font-size: 12.5px;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-  user-select: none;
-}
-.toggle-label strong { color: #fff; font-weight: 600; }
+
 
 /* Pro-only badge */
 .pro-badge {
@@ -887,9 +848,82 @@ body.lite-mode .nav-link[data-pro] {
   font-style: italic;
 }
 
+#lang-switcher{
+
+  display: flex;
+  gap: 4px;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(241 0 255 / 43%);
+  border-radius: 10px;
+  padding: 4px;
+  justify-content: center;
+}
+
+
+/* ── Lite / Pro Toggle ── */
+.version-toggle {
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 20px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(241 0 255 / 43%);
+  border-radius: 10px;
+}
+.toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--border-accent);
+  cursor: pointer;
+  transition: background .25s;
+  flex-shrink: 0;
+}
+.toggle-track.is-on { background: var(--accent); }
+.toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .25s;
+  box-shadow: 0 1px 4px #0004;
+}
+.toggle-track.is-on .toggle-knob { left: 23px; }
+.toggle-label {
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  user-select: none;
+}
+.toggle-label strong { color: #fff; font-weight: 600; }
+
 </style>
 </head>
 <body>
+
+<div class="wrapper" style="overflow-x: hidden;position: relative;">
+
+<div style="
+  position: relative;
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 9999;
+  border-radius: 10px;
+  padding: 20px;
+  display:grid; 
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 36px 14px;
+  ">
+
+
 
 <div class="version-toggle" id="versionToggle">
   <span class="toggle-label"><strong>Full</strong> version</span>
@@ -899,8 +933,16 @@ body.lite-mode .nav-link[data-pro] {
   <span class="toggle-label">Show <strong>Lite</strong> only</span>
 </div>
 
+<!-- LANGUAGE SWITCHER -->
+<div id="lang-switcher">
+  <button class="lang-btn active" data-lang="en" style="cursor:pointer; padding:6px 12px; border:none; border-radius:7px; font-size:12px; font-weight:600; font-family:var(--font-mono); letter-spacing:0.5px; transition:all 0.2s; background:rgba(240,160,48,0.2); color:var(--accent);">EN</button>
+  <button class="lang-btn" data-lang="ja" style="cursor:pointer; padding:6px 12px; border:none; border-radius:7px; font-size:12px; font-weight:600; font-family:var(--font-mono); letter-spacing:0.5px; transition:all 0.2s; background:transparent; color:var(--text-dim);">日本語</button>
+  <button class="lang-btn" data-lang="ko" style="cursor:pointer; padding:6px 12px; border:none; border-radius:7px; font-size:12px; font-weight:600; font-family:var(--font-mono); letter-spacing:0.5px; transition:all 0.2s; background:transparent; color:var(--text-dim);">한국어</button>
+</div>
+</div>
 
-<main class="main">
+
+<main class="main" style="padding-top: 20px;">
 
 <!-- Version Toggle -->
 
@@ -1919,6 +1961,8 @@ body.lite-mode .nav-link[data-pro] {
   Light Painter &copy; 2026 &middot; <a href="https://x.com/ShaderError" style="color:var(--accent); text-decoration:none;">@ShaderError</a>
 </div>
 
+</div>
+
 </main>
 
 <script>
@@ -2232,6 +2276,199 @@ body.lite-mode .nav-link[data-pro] {
       });
     });
   });
+
+  // ═══════════ Language Switcher ═══════════
+  (function() {
+    var SEL = '.section-title, .section-desc, .step-title, .step-body, .field-desc, .param-desc, .subsection-title, .subsection-desc, .param-group-title, .compare-caption, .callout, .field-meta';
+    var originals = [];
+    var toggleOriginals = {};
+
+    function storeOriginals() {
+      document.querySelectorAll(SEL).forEach(function(el, i) {
+        originals[i] = el.innerHTML;
+      });
+      var labels = document.querySelectorAll('.toggle-label');
+      if (labels[0]) toggleOriginals.full = labels[0].innerHTML;
+      if (labels[1]) toggleOriginals.lite = labels[1].innerHTML;
+    }
+
+    // Index-based translations: [index, ja, ko]
+    // null = keep English
+    var T = [
+      [0, 'はじめる前に', '시작하기 전에'],
+      [1, 'Light Painterを使用する前に、以下の手順でシーンを正しく設定してください。スキップするとアドオンが動作しないか、ペイントがレンダーに表示されません。', 'Light Painter를 사용하기 전에 다음 단계에 따라 씬을 올바르게 설정하세요. 건너뛰면 애드온이 작동하지 않거나 페인트가 렌더에 표시되지 않습니다.'],
+      [2, 'Cyclesレンダーエンジンに切り替え', 'Cycles 렌더 엔진으로 전환'],
+      [3, 'Light PainterはCyclesのノードベースのライトテクスチャ（ゴボ）に依存。<code>Render Properties</code> → <code>Render Engine</code>で<code>Cycles</code>に設定。<strong>EEVEE</strong>はサポート対象外。パフォーマンス向上のため<code>Device</code>を<code>GPU Compute</code>に設定を推奨。', 'Light Painter는 Cycles의 노드 기반 라이트 텍스처(고보)에 의존. <code>Render Properties</code> → <code>Render Engine</code>에서 <code>Cycles</code>로 설정. <strong>EEVEE</strong> 미지원. 성능 향상을 위해 <code>Device</code>를 <code>GPU Compute</code>로 설정 권장.'],
+      [4, 'SpotまたはAreaライトを追加', 'Spot 또는 Area 라이트 추가'],
+      [5, 'Light Painterは<strong>Spot</strong>と<strong>Area</strong>ライト専用。PointやSunはサポート外。<code>Add</code> → <code>Light</code> → <code>Spot</code>/<code>Area</code>で追加。', 'Light Painter는 <strong>Spot</strong>과 <strong>Area</strong> 조명 전용. Point와 Sun 미지원. <code>Add</code> → <code>Light</code> → <code>Spot</code>/<code>Area</code>로 추가.'],
+      [6, '小さなSpread / Radius値を設定', '작은 Spread / Radius 값 설정'],
+      [7, 'シャープなペイントのため物理サイズを小さく。<br>• <strong>Spot</strong> — <code>Radius</code> 0.0–0.1m。<code>Spot Size</code> 160°未満。<br>• <strong>Area</strong> — <code>Size</code> 5–30m、<code>Spread</code> 0.01–0.5。', '선명한 페인팅을 위해 물리 크기를 작게.<br>• <strong>Spot</strong> — <code>Radius</code> 0.0–0.1m. <code>Spot Size</code> 160° 미만.<br>• <strong>Area</strong> — <code>Size</code> 5–30m, <code>Spread</code> 0.01–0.5.'],
+      [8, 'パネルでライト選択 & ペイント開始', '패널에서 라이트 선택 & 페인팅 시작'],
+      [9, '<strong>Light Painter</strong>パネルを開き（<code>N</code>キー → <strong>Lighting</strong>タブ）、ライトを選択、解像度を選び<strong>Reset Light</strong>をクリック。<strong>Brush</strong>/<strong>Gradient</strong>ツールでペイント開始！', '<strong>Light Painter</strong> 패널 열기 (<code>N</code> 키 → <strong>Lighting</strong> 탭), 조명 선택, 해상도 선택 후 <strong>Reset Light</strong> 클릭. <strong>Brush</strong>/<strong>Gradient</strong> 도구로 페인팅 시작!'],
+      [10, '<strong>チェックリスト：</strong> Cycles → GPU Compute → Spot/Area追加 → Radius/Spread設定 → ライト選択 → Reset Light → ペイント。', '<strong>체크리스트:</strong> Cycles → GPU Compute → Spot/Area 추가 → Radius/Spread 설정 → 조명 선택 → Reset Light → 페인팅.'],
+      [11, 'ライトソース', '라이트 소스'], [12, 'ペイントするライトと基本テクスチャ解像度を設定。', '페인팅할 라이트와 기본 텍스처 해상도를 설정.'],
+      [13, 'ペイントしたいSpot/Areaライト。アイドロッパーまたはドロップダウンで選択。', '페인팅하려는 Spot/Area 조명. 아이드로퍼 또는 드롭다운으로 선택.'],
+      [14, 'ライトテクスチャ（ゴボ）画像の解像度。高い=より細かいディテール、メモリ増、低速。', '라이트 텍스처(고보) 이미지의 해상도. 높을수록 더 세밀, 메모리 증가, 더 느림.'],
+      [15, 'ライトテクスチャを再初期化し全レイヤーをリセット。解像度変更後やノード破損時に使用。', '라이트 텍스처를 재초기화하고 모든 레이어를 리셋. 해상도 변경 후 또는 노드 손상 시 사용.'],
+      [16, '<strong>注意：</strong> テクスチャ比率はライトサイズに連動。サイズ変更時、全レイヤーが自動リセット。<strong>Cmd + Z</strong>でアンドゥ可能。', '<strong>참고:</strong> 텍스처 비율은 조명 크기에 연동. 크기 변경 시 모든 레이어 자동 리셋. <strong>Cmd + Z</strong>로 실행취소 가능.'],
+      [17, 'レイヤーシステム', '레이어 시스템'], [18, '各ライトにPhotoshopスタイルのレイヤースタック。新レイヤーは上部に追加。下から上へ合成。', '각 라이트에 Photoshop 스타일 레이어 스택. 새 레이어는 위에 추가. 아래에서 위로 합성.'],
+      [19, '<strong>レイヤー保存：</strong> 各レイヤーはBlender Imageデータブロックを作成。一時<code>.exr</code>ファイルも書き込み（レイヤーシステムに必要）。アドオン無効化/Blender終了時に自動クリーンアップ。メタデータは<code>.blend</code>に保存。', '<strong>레이어 저장:</strong> 각 레이어는 Blender Image 데이터블록 생성. 임시 <code>.exr</code> 파일도 기록(레이어 시스템에 필요). 애드온 비활성화/Blender 종료 시 자동 정리. 메타데이터는 <code>.blend</code>에 저장.'],
+      [20, '<code>+</code> <code>−</code> — 新しい空レイヤーを追加 / アクティブレイヤーを削除。', '<code>+</code> <code>−</code> — 새 빈 레이어 추가 / 활성 레이어 삭제.'],
+      [21, '<code>▲</code> <code>▼</code> — アクティブレイヤーを上（後で合成）または下（先に合成）に並べ替え。', '<code>▲</code> <code>▼</code> — 활성 레이어를 위(나중에 합성) 또는 아래(먼저 합성)로 재정렬.'],
+      [22, '<code>Duplicate</code> — 画像データと全設定含むコピーを作成。<span class="pro-badge">Full</span>', '<code>Duplicate</code> — 이미지 데이터와 모든 설정 포함 복사본 생성. <span class="pro-badge">Full</span>'],
+      [23, '<code>Merge Visible</code> — 表示中の全レイヤーを1つに統合。非表示は保持。<span class="pro-badge">Full</span>', '<code>Merge Visible</code> — 모든 표시 레이어를 하나로 병합. 숨긴 레이어 유지. <span class="pro-badge">Full</span>'],
+      [24, 'アクティブレイヤー', '활성 레이어'], [25, '選択中レイヤーのコントロール。', '선택된 레이어의 컨트롤.'],
+      [26, 'ブレンド', '블렌드'],
+      [27, 'マスター不透明度。0=完全透明、1=フルストレングス。', '마스터 불투명도. 0=완전 투명, 1=풀 스트렝스.'],
+      [28, '<span><strong>デフォルト：</strong> 1.0</span>', '<span><strong>기본값:</strong> 1.0</span>'],
+      [29, 'ピクセル合成方法。<strong>Mix</strong>、<strong>Multiply</strong>、<strong>Screen</strong>、<strong>Add</strong>、<strong>Subtract</strong>、<strong>Overlay</strong>、<strong>Soft Light</strong>。', '픽셀 합성 방법. <strong>Mix</strong>, <strong>Multiply</strong>, <strong>Screen</strong>, <strong>Add</strong>, <strong>Subtract</strong>, <strong>Overlay</strong>, <strong>Soft Light</strong>.'],
+      [30, 'Image Tex → アクティブレイヤー <span class="pro-badge">Full</span>', 'Image Tex → 활성 레이어 <span class="pro-badge">Full</span>'],
+      [31, 'Blenderに読み込み済み画像を選択。解像度にリサイズされアクティブレイヤーに書き込み。', 'Blender에 로드된 이미지 선택. 해상도에 맞게 리사이즈 후 활성 레이어에 기록.'],
+      [32, 'Fill Color → アクティブレイヤー', 'Fill Color → 활성 레이어'],
+      [33, '単色で塗りつぶし。白=フルライト、黒=ライトなし。アルファ0でクリア。<strong>Apply</strong>をクリック。', '단색으로 채우기. 흰색=풀 라이트, 검은색=라이트 없음. 알파 0으로 클리어. <strong>Apply</strong> 클릭.'],
+      [34, '<span><strong>デフォルト：</strong> (0, 0, 0, 1) — 黒、不透明</span>', '<span><strong>기본값:</strong> (0, 0, 0, 1) — 검은색, 불투명</span>'],
+      [35, 'レイヤートランスフォーム', '레이어 트랜스폼'],
+      [36, 'ライトUV空間でのアクティブレイヤーの非破壊トランスフォーム。', '라이트 UV 공간에서의 활성 레이어 비파괴 변형.'],
+      [37, '<strong>Offset</strong> — UV空間で移動（1.0=テクスチャ全幅/全高）。', '<strong>Offset</strong> — UV 공간에서 이동 (1.0=텍스처 전체 폭/높이).'],
+      [38, '<strong>Rotation</strong> — ピボットを中心に回転。', '<strong>Rotation</strong> — 피벗을 중심으로 회전.'],
+      [39, '<strong>Scale</strong> — ピボットからリサイズ（1未満=拡大、1超=縮小）。', '<strong>Scale</strong> — 피벗에서 리사이즈 (1 미만=확대, 1 초과=축소).'],
+      [40, '<strong>Pivot</strong> — 回転/スケール中心。(0.5, 0.5)=中央、(0, 0)=左下、範囲0–1。', '<strong>Pivot</strong> — 회전/스케일 중심. (0.5, 0.5)=중앙, (0, 0)=좌하단, 범위 0–1.'],
+      [41, '<span><strong>Offset:</strong> (0, 0)</span><span><strong>Rotation:</strong> 0°</span><span><strong>Scale:</strong> (1, 1)</span><span><strong>Pivot:</strong> (0.5, 0.5)</span>', '<span><strong>Offset:</strong> (0, 0)</span><span><strong>Rotation:</strong> 0°</span><span><strong>Scale:</strong> (1, 1)</span><span><strong>Pivot:</strong> (0.5, 0.5)</span>'],
+      [42, 'すべてのトランスフォーム値をデフォルトにリセット。', '모든 변형 값을 기본값으로 리셋.'],
+      [43, '<strong>レイヤーショートカット</strong>（Brush/Gradient選択時）：<br><span class="hotkey">D長押し</span>+ドラッグで移動 &nbsp;<span class="hotkey">F長押し</span>+ドラッグで回転 &nbsp;<span class="hotkey">V長押し</span>+ドラッグでスケール', '<strong>레이어 단축키</strong> (Brush/Gradient 선택 시):<br><span class="hotkey">D 누름</span>+드래그로 이동 &nbsp;<span class="hotkey">F 누름</span>+드래그로 회전 &nbsp;<span class="hotkey">V 누름</span>+드래그로 스케일'],
+      [44, 'ペイントサーフェス <span class="pro-badge">Full</span>', '페인트 서피스 <span class="pro-badge">Full</span>'],
+      [45, 'ペイントを受けるオブジェクトと透明扱いのオブジェクトをコントロール。', '페인트를 받을 오브젝트와 투명 처리할 오브젝트를 제어.'],
+      [46, 'Paint On', 'Paint On'], [47, 'ペイント可能なメッシュを選択。', '페인팅 가능한 메시 선택.'],
+      [48, 'ペイント可能なジオメトリの範囲をコントロール。', '페인팅 가능한 지오메트리 범위 제어.'],
+      [49, '<span><strong>All:</strong> シーンの全メッシュにペイント</span><span><strong>Single Object:</strong> 選択したメッシュのみ</span><span><strong>Collection:</strong> 選択したコレクションのメッシュのみ</span>', '<span><strong>All:</strong> 씬의 모든 메시에 페인팅</span><span><strong>Single Object:</strong> 선택한 메시만</span><span><strong>Collection:</strong> 선택한 컬렉션의 메시만</span>'],
+      [50, 'Skip Transparent', 'Skip Transparent'],
+      [51, 'アドオンは透明マテリアルを自動検出<strong>しません</strong>。光を通すべきオブジェクトはここで手動マーク。そうしないとデプスパスがソリッドとして扱い、誤って光をブロック。', '애드온은 투명 머티리얼을 자동 감지<strong>하지 않음</strong>. 빛을 통과시킬 오브젝트는 여기서 수동 지정. 그렇지 않으면 뎁스 패스가 솔리드로 처리하여 빛을 잘못 차단.'],
+      [52, 'ここにリストされたオブジェクトはペイントの受信<strong>と</strong>光のブロッキングの両方から除外。ライトのデプスパスに不可視。', '여기 나열된 오브젝트는 페인트 수신<strong>과</strong> 빛 차단 모두에서 제외. 라이트의 뎁스 패스에 보이지 않음.'],
+      [53, '<strong>使用場面：</strong> ガラス窓、半透明カーテン、フォグ/ダストボリューム、ワイヤーフレーム、透明/半透明シェーダーのオブジェクト。', '<strong>사용 시기:</strong> 유리창, 반투명 커튼, 안개/먼지 볼륨, 와이어프레임, 투명/반투명 셰이더 오브젝트.'],
+      [54, 'ペイントモード', '페인트 모드'], [55, 'ペイント中の座標空間とカラーブレンディング方法。どちらもカメラ/ビューポート経由 — 違いはライトテクスチャへの投影方法。', '페인팅 중 좌표 공간과 컬러 블렌딩. 둘 다 카메라/뷰포트 경유 — 차이점은 라이트 텍스처 투사 방식.'],
+      [56, 'ブラシ形状がライトテクスチャにどう投影されるかの違い。', '브러시 형태가 라이트 텍스처에 어떻게 투사되는지의 차이.'],
+      [57, '<span><strong>Camera Space:</strong> 画面上の表示と完全一致。ブラシフォールオフが1:1でマッピング。グラデーションはスクリーン空間でブレンド後投影。<span class="pro-badge">Full</span></span>', '<span><strong>Camera Space:</strong> 화면 표시와 정확히 일치. 브러시 폴오프가 1:1로 매핑. 그라데이션은 스크린 공간에서 블렌딩 후 투사. <span class="pro-badge">Full</span></span>'],
+      [58, '<span><strong>Light Space:</strong> ブラシ計算（形状、サイズ、フォールオフ）はライトテクスチャ空間で実行。ブラシ中心とグラデーション始点/終点のみビューポートから取得。ライトの距離・角度により歪みが生じる場合あり。</span>', '<span><strong>Light Space:</strong> 브러시 계산(형태, 크기, 폴오프)은 라이트 텍스처 공간에서 수행. 브러시 중심과 그라데이션 시작/끝점만 뷰포트에서 가져옴. 조명 거리/각도에 따라 왜곡 가능.</span>'],
+      [59, '<span><strong style="color: red;">重要：</strong> Light SpaceはSpotライトのみ対応。AreaはCamera Spaceのみ使用可能。</span>', '<span><strong style="color: red;">중요:</strong> Light Space는 Spot 조명만 지원. Area는 Camera Space만 사용 가능.</span>'],
+      [60, '<span><strong>Light Space使用場面：</strong> ビュー角度に関わらずテクスチャに一貫した結果が必要な場合。結果は投影ジオメトリに依存。</span>', '<span><strong>Light Space 사용 시기:</strong> 뷰 각도에 관계없이 텍스처에 일관된 결과가 필요할 때. 결과는 투사 지오메트리에 의존.</span>'],
+      [61, 'スライダーをドラッグしてCamera SpaceとLight Spaceを比較。タブでシーンビュー/テクスチャ結果を切り替え。', '슬라이더를 드래그하여 Camera Space와 Light Space 비교. 탭으로 씬 뷰/텍스처 결과 전환.'],
+      [62, 'ペイントが既存ピクセル上にブレンドされるカラースペース。<a href="#color-spaces" style="color:var(--accent2)">カラースペース</a>参照。', '페인트가 기존 픽셀 위에 블렌딩되는 컬러 스페이스. <a href="#color-spaces" style="color:var(--accent2)">컬러 스페이스</a> 참조.'],
+      [63, 'ブラシツール', '브러시 도구'], [64, 'モード', '모드'],
+      [65, 'ペイントと消去を切り替え。', '페인팅과 지우기 전환.'], [66, '各スタンプで適用される色。消去モード時は無効。', '각 스탬프에 적용되는 색. 지우기 모드 시 비활성화.'],
+      [67, 'シェイプ', '셰이프'],
+      [68, 'ブラシ半径。<strong>Camera Space</strong>=ビューポートピクセル単位。<strong>Light Space</strong>=テクセル単位。範囲: 1–1024。', '브러시 반지름. <strong>Camera Space</strong>=뷰포트 픽셀 단위. <strong>Light Space</strong>=텍셀 단위. 범위: 1–1024.'],
+      [69, 'エッジのシャープさ。0=柔らかいフェード、1=鮮明な境界。', '에지 선명도. 0=부드러운 페이드, 1=선명한 경계.'],
+      [70, 'ストロークあたりの最大不透明度。フルフローでも超えない。', '스트로크당 최대 불투명도. 풀 플로우에서도 초과 안 함.'],
+      [71, 'スタンプあたりのペイント蓄積速度。低い値で徐々に蓄積、1.0で1スタンプにフル適用。', '스탬프당 페인트 축적 속도. 낮은 값은 점진적 축적, 1.0이면 한 스탬프에 풀 적용.'],
+      [72, 'フォールオフ <span class="pro-badge">Full</span>', '폴오프 <span class="pro-badge">Full</span>'],
+      [73, 'ブラシ中心→エッジの不透明度遷移を制御する数学的カーブ。', '브러시 중심→에지의 불투명도 전환 제어 수학적 커브.'],
+      [74, 'フォールオフカーブにガンマ補正を適用。1未満=ソフト、1超=ハード。範囲: 0.1–2.0', '폴오프 커브에 감마 보정 적용. 1 미만=소프트, 1 초과=하드. 범위: 0.1–2.0'],
+      [75, '後処理 <span class="pro-badge">Full</span>', '후처리 <span class="pro-badge">Full</span>'],
+      [76, 'スタンプ後にブラーを適用。ギザギザを滑らかにしソフトな効果を作成。', '스탬프 후 블러 적용. 거친 에지를 부드럽게 하고 소프트한 효과 생성.'],
+      [77, '<em>ライトテクスチャテクセル</em>単位。半径1=ゴボ画像の1ピクセル。', '<em>라이트 텍스처 텍셀</em> 단위. 반지름 1=고보 이미지의 1픽셀.'],
+      [78, 'ブラーカーネル形状。<strong>SCurve</strong>=高速だが大半径でボクシー。<strong>Gaussian</strong>=より滑らかだがやや遅い。', '블러 커널 형태. <strong>SCurve</strong>=빠르지만 큰 반지름에서 박시. <strong>Gaussian</strong>=더 부드럽지만 약간 느림.'],
+      [79, 'Camera Space専用 <span class="pro-badge">Full</span>', 'Camera Space 전용 <span class="pro-badge">Full</span>'],
+      [80, 'ブラシフットプリントエッジでのテクセルペイントを防止し、明るいハロを回避。', '브러시 풋프린트 에지에서의 텍셀 페인팅 방지, 밝은 할로 회피.'],
+      [81, '左: エッジの明るいハロ。右: Brush Clippingでクリーン。', '왼쪽: 에지의 밝은 할로. 오른쪽: Brush Clipping으로 깨끗.'],
+      [82, 'Light Space専用 <span class="pro-badge">Full</span>', 'Light Space 전용 <span class="pro-badge">Full</span>'],
+      [83, 'Light Spaceペイント時のマウス→テクスチャのマッピング方法。', 'Light Space 페인팅 시 마우스→텍스처 매핑 방식.'],
+      [84, 'カメラからレイを飛ばしジオメトリにヒット。曲面で正確。ジオメトリなし空間では自動的にPlaneにフォールバック。', '카메라에서 레이를 쏘아 지오메트리에 히트. 곡면에서 정확. 지오메트리 없는 공간에서는 자동 Plane으로 폴백.'],
+      [85, '最初のクリックでペイントプレーンを確立し以降のマウス位置をプレーンに投影。複雑サーフェスのジッター回避に適合。', '첫 클릭으로 페인트 플레인 설정, 이후 마우스 위치를 플레인에 투사. 복잡한 서피스에서 지터 회피에 적합.'],
+      [86, 'Raycast vs Plane投影を比較。タブでシーンビュー/テクスチャ結果切り替え。', 'Raycast vs Plane 투사 비교. 탭으로 씬 뷰/텍스처 결과 전환.'],
+      [87, '<strong>選択ショートカット</strong>：<br><span class="hotkey">Ctrl+D</span> クリア &nbsp; <span class="hotkey">Ctrl+I</span> 反転 &nbsp; <span class="hotkey">Ctrl+G</span> 移動', '<strong>선택 단축키</strong>:<br><span class="hotkey">Ctrl+D</span> 해제 &nbsp; <span class="hotkey">Ctrl+I</span> 반전 &nbsp; <span class="hotkey">Ctrl+G</span> 이동'],
+      [88, 'グラデーションツール <span class="pro-badge">Full</span>', '그라데이션 도구 <span class="pro-badge">Full</span>'],
+      [89, 'クリック＆ドラッグで2点間のグラデーションを描画。', '클릭 & 드래그로 두 점 사이에 그라데이션 그리기.'],
+      [90, 'シェイプ', '셰이프'], [91, 'グラデーションの形状。', '그라데이션 형태.'],
+      [92, 'カラーブレンドの補間カーブ。', '컬러 블렌딩 보간 커브.'],
+      [93, 'カラー', '컬러'], [94, '2色の補間スペース。<a href="#color-spaces" style="color:var(--accent2)">カラースペース</a>参照。', '두 색의 보간 공간. <a href="#color-spaces" style="color:var(--accent2)">컬러 스페이스</a> 참조.'],
+      [95, 'ドラッグ始点の色。ラジアル=中心。', '드래그 시작점 색. 방사형=중심.'], [96, '始点の不透明度。', '시작점 불투명도.'],
+      [97, '終点の色。ラジアル=外側エッジ。', '끝점 색. 방사형=외측 에지.'], [98, '終点の不透明度。', '끝점 불투명도.'],
+      [99, '始点と終点のカラーをスワップ。プレビュー中<span class="hotkey">X</span>で切替。', '시작/끝 컬러 스왑. 미리보기 중 <span class="hotkey">X</span>로 전환.'],
+      [100, '後処理', '후처리'], [101, 'ノイズ/ブラーでバンディングを低減。', '노이즈/블러로 밴딩 저감.'],
+      [102, '<strong>グラデーションツール：</strong> Light SpaceではRaycast方式を常に使用。この設定はBrushツールにのみ影響。', '<strong>그라데이션 도구:</strong> Light Space에서는 항상 Raycast 방식 사용. 이 설정은 Brush 도구에만 영향.'],
+      [103, '<strong>選択ショートカット</strong>：<br><span class="hotkey">Ctrl+D</span> クリア &nbsp; <span class="hotkey">Ctrl+I</span> 反転 &nbsp; <span class="hotkey">Ctrl+G</span> 移動', '<strong>선택 단축키</strong>:<br><span class="hotkey">Ctrl+D</span> 해제 &nbsp; <span class="hotkey">Ctrl+I</span> 반전 &nbsp; <span class="hotkey">Ctrl+G</span> 이동'],
+      [104, '選択ツール <span class="pro-badge">Full</span>', '선택 도구 <span class="pro-badge">Full</span>'],
+      [105, 'ペイントを制限するマスクを作成 — 範囲外は保護。', '페인팅을 제한하는 마스크 생성 — 범위 밖은 보호.'],
+      [106, '選択を描画する幾何学的方法。', '선택을 그리는 기하학적 방법.'],
+      [107, '<span><strong>Rectangle:</strong> クリックドラッグボックス</span><span><strong>Polygon:</strong> クリックでポイント追加、Enterで閉じる</span><span><strong>Lasso:</strong> フリーハンドドラッグ、離して閉じる</span><span><strong>Brush:</strong> 円形ブラシでペイント（サイズ1–500、デフォルト35）</span>', '<span><strong>Rectangle:</strong> 클릭 드래그 박스</span><span><strong>Polygon:</strong> 클릭으로 포인트 추가, Enter로 닫기</span><span><strong>Lasso:</strong> 프리핸드 드래그, 놓으면 닫기</span><span><strong>Brush:</strong> 원형 브러시로 페인팅 (크기 1–500, 기본 35)</span>'],
+      [108, '新しい選択が既存の選択とどう相互作用するか。', '새 선택이 기존 선택과 어떻게 상호작용하는지.'],
+      [109, '選択中に<span class="hotkey">Shift</span>でAdd、<span class="hotkey">Ctrl</span>でSubtract、<span class="hotkey">Alt</span>でIntersect。', '선택 중 <span class="hotkey">Shift</span>로 Add, <span class="hotkey">Ctrl</span>로 Subtract, <span class="hotkey">Alt</span>로 Intersect.'],
+      [110, 'マスクを削除し全ピクセルをペイント可能に。', '마스크 제거, 모든 픽셀 페인팅 가능.'],
+      [111, '選択/非選択を反転。', '선택/비선택 반전.'],
+      [112, '<strong>選択ショートカット</strong>：<span class="hotkey">Ctrl+D</span> クリア &nbsp; <span class="hotkey">Ctrl+I</span> 反転 &nbsp; <span class="hotkey">Ctrl+G</span> 移動', '<strong>선택 단축키</strong>: <span class="hotkey">Ctrl+D</span> 해제 &nbsp; <span class="hotkey">Ctrl+I</span> 반전 &nbsp; <span class="hotkey">Ctrl+G</span> 이동'],
+      [113, 'プレビューモード <span class="pro-badge">Full</span>', '미리보기 모드 <span class="pro-badge">Full</span>'],
+      [114, 'ペイント中にリアルタイムで結果を表示するオーバーレイ。', '페인팅 중 실시간으로 결과를 표시하는 오버레이.'],
+      [115, '<strong>Paint Only</strong> — 描画中のみプレビュー。<strong>All Masks</strong> — テクスチャとマスク全体をオーバーレイ、ペイント不可エリアを赤でハイライト。', '<strong>Paint Only</strong> — 그리는 부분만 미리보기. <strong>All Masks</strong> — 텍스처와 마스크 전체 오버레이, 페인팅 불가 영역 빨간색 하이라이트.'],
+      [116, '<strong>Raw Color</strong> — テクスチャに書き込まれる色を表示。<strong>Light Falloff</strong> — ノーマル、距離減衰、トーンマッピング等を含む実結果を表示。', '<strong>Raw Color</strong> — 텍스처에 기록될 색 표시. <strong>Light Falloff</strong> — 노멀, 거리 감쇠, 톤매핑 등 포함 실제 결과 표시.'],
+      [117, 'デフォルト有効。ライトソースの物理サイズに基づく光の広がりを模倣。<strong>Multiplier</strong>（デフォルト1.0）でブラー量をスケーリング。', '기본 활성화. 라이트 소스의 물리적 크기에 따른 빛 확산 모방. <strong>Multiplier</strong>(기본 1.0)로 블러량 스케일링.'],
+      [118, '高度な設定 <span class="pro-badge">Full</span>', '고급 설정 <span class="pro-badge">Full</span>'],
+      [119, 'デフォルトで大半のシーンに対応 — アーティファクト時のみ調整。', '기본값으로 대부분의 씬에 대응 — 아티팩트 시에만 조정.'],
+      [120, 'ライトフラスタムクリッピング。大シーンにはFarを増やし、近いオブジェクトがクリップ時はNearを減少。', '라이트 프러스텀 클리핑. 큰 씬에는 Far 증가, 가까운 오브젝트 클리핑 시 Near 감소.'],
+      [122, 'シャドウアクネ防止のためノーマル沿いにオフセット。スペックル時は増加。', '섀도우 아크네 방지를 위해 노멀 따라 오프셋. 반점 시 증가.'],
+      [124, '<strong>Softness</strong> — PCFブラー（1=シャープ、5=ソフト）。<strong>Bleed Reduction</strong> — 光漏れ防止VSMパワー。', '<strong>Softness</strong> — PCF 블러 (1=선명, 5=부드러움). <strong>Bleed Reduction</strong> — 빛 누출 방지 VSM 파워.'],
+      [126, 'シャドウエッジとペイント配置用デプスバッファ解像度。デフォルト2048。', '그림자 에지와 페인트 배치용 뎁스 버퍼 해상도. 기본 2048.'],
+      [127, 'カラースペース', '컬러 스페이스'], [128, 'カラーのブレンドとグラデーション補間方法。選択で中間色が変わります。', '컬러 블렌딩과 그라데이션 보간 방법. 선택에 따라 중간색이 달라짐.'],
+      [129, '色相を回転しブレンド。中間で鮮やかで彩度高い色を保持。', '색조를 회전하며 블렌딩. 중간에 선명하고 채도 높은 색 유지.'],
+      [130, '明度を一定に保ちブレンド。遷移が滑らかで均一。', '밝기를 일정하게 유지하며 블렌딩. 전환이 부드럽고 균일.'],
+      [131, '実際の色光の物理混合を模倣。正確で自然。', '실제 색광의 물리적 혼합 모방. 정확하고 자연스러움.'],
+      [132, 'ディスプレイカラースペースでの直接ブレンド — ほとんどの画像エディタと同じ。中間色は暗い傾向。', '디스플레이 컬러 스페이스에서 직접 블렌드 — 대부분의 이미지 에디터와 동일. 중간색은 어둡게 보이는 경향.'],
+    ];
+    var toggleT = {
+      ja: { full: '<strong>Full</strong> バージョン', lite: '<strong>Lite</strong> のみ表示' },
+      ko: { full: '<strong>Full</strong> 버전', lite: '<strong>Lite</strong>만 표시' }
+    };
+
+    var originals = [];
+    var toggleOriginals = {};
+
+    function storeOriginals() {
+      document.querySelectorAll(SEL).forEach(function(el, i) {
+        originals[i] = el.innerHTML;
+      });
+      var labels = document.querySelectorAll('.toggle-label');
+      if (labels[0]) toggleOriginals.full = labels[0].innerHTML;
+      if (labels[1]) toggleOriginals.lite = labels[1].innerHTML;
+    }
+
+    function applyLang(lang) {
+      var els = document.querySelectorAll(SEL);
+      if (lang === 'en') {
+        els.forEach(function(el, i) {
+          if (originals[i] != null) el.innerHTML = originals[i];
+        });
+        var labels = document.querySelectorAll('.toggle-label');
+        if (labels[0] && toggleOriginals.full) labels[0].innerHTML = toggleOriginals.full;
+        if (labels[1] && toggleOriginals.lite) labels[1].innerHTML = toggleOriginals.lite;
+      } else {
+        var langIdx = lang === 'ja' ? 1 : 2;
+        T.forEach(function(entry) {
+          var idx = entry[0];
+          var text = entry[langIdx];
+          if (text != null && els[idx]) els[idx].innerHTML = text;
+        });
+        var tgl = toggleT[lang];
+        if (tgl) {
+          var labels = document.querySelectorAll('.toggle-label');
+          if (labels[0]) labels[0].innerHTML = tgl.full;
+          if (labels[1]) labels[1].innerHTML = tgl.lite;
+        }
+      }
+    }
+
+    storeOriginals();
+
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.lang-btn').forEach(function(b) {
+          b.style.background = 'transparent';
+          b.style.color = 'var(--text-dim)';
+        });
+        this.style.background = 'rgba(240,160,48,0.2)';
+        this.style.color = 'var(--accent)';
+        applyLang(this.dataset.lang);
+      });
+    });
+  })();
 
   // ═══════════ Lite / Pro Toggle ═══════════
 
